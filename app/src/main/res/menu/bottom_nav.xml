@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Company"
+        android:id="@+id/company"
+        android:icon="@drawable/ic_baseline_collections_bookmark_24"/>
+    <item android:title="Owner"
+        android:id="@+id/owner"
+        android:icon="@drawable/ic_baseline_laptop_chromebook_24" />
+    <item android:title="Worker"
+        android:id="@+id/worker"
+        android:icon="@drawable/ic_baseline_people_24"/>
+</menu>
