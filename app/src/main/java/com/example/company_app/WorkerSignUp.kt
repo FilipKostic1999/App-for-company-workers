@@ -36,6 +36,8 @@ class WorkerSignUp : AppCompatActivity() {
 
 
         binding.signInTxt.setOnClickListener {
+
+
             val intent = Intent(this, WorkerSignIn::class.java)
 
             startActivity(intent)
@@ -60,9 +62,13 @@ class WorkerSignUp : AppCompatActivity() {
                 if (pass == confirmPass) {
                     firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener {
                         if (it.isSuccessful) {
+
                             val intent = Intent(this, WorkerSignIn::class.java)
 
                             startActivity(intent)
+
+
+
                         } else {
                             Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()
                         }

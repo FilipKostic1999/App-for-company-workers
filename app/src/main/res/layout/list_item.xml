@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_Name"
-                android:text=" "
+                android:text="  Name"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
@@ -55,7 +55,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hours:"
+                android:text="Today´s Hours:"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
@@ -87,7 +87,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Posted hours:"
+                android:text="Total hours in cronology:"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
@@ -127,7 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvComment"
-                android:text="   Arya"
+                android:text="   Add comment"
                 android:textColor="@color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
@@ -159,7 +159,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_date"
-                android:text="Date"
+                android:text="  Date"
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
