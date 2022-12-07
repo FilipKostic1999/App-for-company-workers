@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:text="Name: "
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -34,7 +34,7 @@
                 android:id="@+id/tv_Name"
                 android:text=" "
                 android:textColor="@color/black"
-                android:textSize="14sp"
+                android:textSize="18sp"
                 android:textStyle="bold"/>
 
 
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:text="Hours:"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -66,7 +66,7 @@
                 android:id="@+id/tvHours"
                 android:text=" 0"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"/>
 
 
@@ -78,7 +78,7 @@
 
 
 
-        <LinearLayout
+         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -87,9 +87,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total hours:"
+                android:text="Posted hours:"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -98,7 +98,7 @@
                 android:id="@+id/tvTotalHrs"
                 android:text=" 0"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"/>
 
 
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:text="Comment:"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -129,7 +129,7 @@
                 android:id="@+id/tvComment"
                 android:text="   Arya"
                 android:textColor="@color/black"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:textStyle="bold"/>
 
 
@@ -138,6 +138,42 @@
 
 
         </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date:"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_date"
+                android:text="Date"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+
+
+
+
+
+        </LinearLayout>
+
+
+
+
 
 
 

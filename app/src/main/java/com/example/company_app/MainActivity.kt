@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 R.id.owner -> {
-                    val   intent = Intent(this, AllWorkersData::class.java)
+                    val   intent = Intent(this, Owner::class.java)
                     startActivity(intent)
                 }
 
@@ -58,8 +58,10 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onBackPressed() {
-        Toast.makeText(applicationContext, "This action is", Toast.LENGTH_SHORT).show()
+
     }
+
+
 
 
 

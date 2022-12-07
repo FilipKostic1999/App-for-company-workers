@@ -30,6 +30,7 @@ class MyAdapter(private val documentsList : ArrayList<objectData>) : RecyclerVie
         holder.hours.text = document.hours.toString()
         holder.totalHours.text = document.totalHours.toString()
         holder.name.text = document.userIdentity
+        holder.dateInput.text = document.date
     }
 
 
@@ -56,6 +57,7 @@ class MyAdapter(private val documentsList : ArrayList<objectData>) : RecyclerVie
         val hours : TextView = itemView.findViewById(R.id.tvHours)
         val totalHours : TextView = itemView.findViewById(R.id.tvTotalHrs)
         val name : TextView = itemView.findViewById(R.id.tv_Name)
+        val dateInput : TextView = itemView.findViewById(R.id.tv_date)
     }
 
 

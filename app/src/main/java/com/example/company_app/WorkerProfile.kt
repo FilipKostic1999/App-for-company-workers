@@ -3,13 +3,17 @@ package com.example.company_app
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -22,16 +26,19 @@ class WorkerProfile : AppCompatActivity() {
     lateinit var logOut : Button
     lateinit var personC : TextView
     lateinit var personN : TextView
+    lateinit var dateWork : TextView
     lateinit var workHoursEditText : TextView
     lateinit var totalTextview : TextView
+    lateinit var counterText : TextView
+
 
    lateinit var objectDataItem : objectData
 
 
 
-    var selector : Int = 0
-    var calculator : Double = 0.0
 
+    var calculator : Double = 0.0
+    var counter : Int = 0
 
 
     lateinit var database : FirebaseFirestore
@@ -55,7 +62,6 @@ class WorkerProfile : AppCompatActivity() {
         setContentView(R.layout.activity_worker_profile)
 
 
-
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
@@ -69,7 +75,8 @@ class WorkerProfile : AppCompatActivity() {
 
         recyclerView.adapter = myAdapter
 
-        EventChangeListener()
+
+
 
 
 
@@ -77,19 +84,6 @@ class WorkerProfile : AppCompatActivity() {
 
         var sharedN = getSharedPreferences("Name", AppCompatActivity.MODE_PRIVATE)
         var Name = sharedN.getString("Name", "")
-
-
-
-
-         //  sharedN = getSharedPreferences("Name", AppCompatActivity.MODE_PRIVATE)
-        //   Name = sharedN.getString("Name", "")
-
-
-
-
-        // Esperienza = Esperienza + espBottino
-
-
 
 
 
@@ -108,9 +102,25 @@ class WorkerProfile : AppCompatActivity() {
 
         personC = findViewById(R.id.editTextTextPersonComment)
         personN = findViewById(R.id.editName)
+        dateWork = findViewById(R.id.dayOfWork)
+        counterText = findViewById(R.id.counterText)
         workHoursEditText = findViewById(R.id.workHoursEditText)
         totalTextview = findViewById(R.id.totalTextView)
 
+        totalTextview.isVisible = false
+
+
+
+
+        counterText.isVisible = false
+
+
+
+
+
+        if (personN.text != null) {
+            personN.text = "$Name"
+        }
 
 
 
@@ -118,16 +128,9 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-
-
-
-
-
-
-        if (user != null) {
-            database.collection("users").document(user.uid)
-                .collection("Items")
+        if (user != null && personN.text != null) {
+            database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
+                .collection("${personN.text} cronology").orderBy("order", Query.Direction.DESCENDING)
 
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
@@ -138,6 +141,7 @@ class WorkerProfile : AppCompatActivity() {
                             listOfDocuments.add(objectDataItem)
 
 
+                                counter = counter + objectDataItem.preOrder
                                 calculator = calculator + objectDataItem.hours
                                 Log.d("!!!", "$calculator" )
 
@@ -184,6 +188,7 @@ class WorkerProfile : AppCompatActivity() {
 
             listOfDocuments.clear()
 
+
             saveItem()
 
             Name = personN.text.toString()
@@ -211,42 +216,18 @@ class WorkerProfile : AppCompatActivity() {
     }
 
 
-
-
-    private fun EventChangeListener() {
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     fun saveItem() {
 
-           var path = personN.text.toString()
-
+        var path = personN.text.toString()
+        var dayOfWork = dateWork.text.toString()
         val finalHours = calculator + workHoursEditText.text.toString().toDouble()
 
+
+      var IntCounterText = counter + counterText.text.toString().toInt()
+
         val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
-            totalHours = finalHours, userIdentity = personN.text.toString())
+            totalHours = finalHours, userIdentity = personN.text.toString(), order = IntCounterText, date = dayOfWork,
+        preOrder = counterText.text.toString().toInt())
 
 
 
@@ -278,9 +259,11 @@ class WorkerProfile : AppCompatActivity() {
 
         personC.text = ""
         workHoursEditText.text = ""
+        dateWork.text = "Date"
 
 
         calculator = 0.0
+        counter = 0
 
 
         val user = auth.currentUser
@@ -292,7 +275,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-        path = "$path long"
+        path = "$path cronology"
 
 
         database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
@@ -313,7 +296,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-      /*  database.collection("users").document(user.uid).collection("Items").add(item)
+     /*   database.collection("users").document(user.uid).collection("Items").add(item)
 
 
             .addOnCompleteListener {
