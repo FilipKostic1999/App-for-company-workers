@@ -13,7 +13,18 @@
         android:theme="@style/Theme.Company_app"
         tools:targetApi="31">
         <activity
+            android:name=".createUsername"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".OwnerShowRecycleview"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -21,6 +32,8 @@
         </activity>
         <activity
             android:name=".AllWorkersData"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -28,6 +41,8 @@
         </activity>
         <activity
             android:name=".WorkerProfile"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -35,6 +50,8 @@
         </activity>
         <activity
             android:name=".WorkerSignIn"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -42,6 +59,8 @@
         </activity>
         <activity
             android:name=".Owner"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -49,6 +68,8 @@
         </activity>
         <activity
             android:name=".WorkerSignUp"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -56,6 +77,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="locked"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

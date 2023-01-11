@@ -3,18 +3,24 @@ package com.example.company_app
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import com.example.company_app.databinding.ActivityWorkerSignUpBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class WorkerSignUp : AppCompatActivity() {
 
     private lateinit var binding: ActivityWorkerSignUpBinding
     private lateinit var firebaseAuth: FirebaseAuth
+
+    lateinit var database : FirebaseFirestore
 
 
 
@@ -26,6 +32,11 @@ class WorkerSignUp : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
+
+
+
+        database = Firebase.firestore
+        firebaseAuth = Firebase.auth
 
 
 
@@ -63,7 +74,10 @@ class WorkerSignUp : AppCompatActivity() {
                     firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener {
                         if (it.isSuccessful) {
 
-                            val intent = Intent(this, WorkerSignIn::class.java)
+
+
+
+                            val intent = Intent(this, createUsername::class.java)
 
                             startActivity(intent)
 

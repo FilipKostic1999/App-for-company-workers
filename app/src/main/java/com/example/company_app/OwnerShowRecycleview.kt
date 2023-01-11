@@ -1,5 +1,6 @@
 package com.example.company_app
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -26,9 +27,12 @@ class OwnerShowRecycleview : AppCompatActivity() {
     lateinit var nameDataSearch : TextView
     lateinit var totalOwnerHours : TextView
 
+
+
     var calculator : Double = 0.0
 
     var nameDataSearchText = ""
+
 
 
     lateinit var objectDataItem2 : objectData
@@ -37,6 +41,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
     private lateinit var listOfDocuments2 : ArrayList<objectData>
     private lateinit var myAdapter: MyAdapter
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_owner_show_recycleview)
@@ -58,6 +63,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
         listOfDocuments2 = arrayListOf()
+        listOfDocuments2.clear()
         myAdapter = MyAdapter(listOfDocuments2)
         recyclerView.adapter = myAdapter
 
@@ -73,67 +79,106 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
             listOfDocuments2.clear()
 
+            calculator = 0.0
 
             nameDataSearchText = nameDataSearch.text.toString()
 
-            database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
-                .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
-
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
-                        for (document in snapshot.documents) {
-
-                            objectDataItem2 = document.toObject()!!
-
-                            listOfDocuments2.add(objectDataItem2)
-
-                            calculator = calculator + objectDataItem2.hours
-                            totalOwnerHours.text = "Total hours $calculator"
 
 
 
-                            myAdapter.notifyDataSetChanged()
+
+                database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
+                    .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
+
+                    .addSnapshotListener { snapshot, e ->
+                        if (snapshot != null) {
+
+                            for (document in snapshot.documents) {
+
+                                objectDataItem2 = document.toObject()!!
 
 
+                                    listOfDocuments2.add(objectDataItem2)
+
+                                    calculator = calculator + objectDataItem2.hours
+
+
+                                    totalOwnerHours.text = "Total hours in cronology $calculator"
+
+
+
+
+
+
+                                    myAdapter.notifyDataSetChanged()
+
+
+
+
+
+
+
+                            }
                         }
                     }
-                }
 
-            calculator = 0.0
+
+
+
+
+
+
+
 
         }
 
 
         monthB.setOnClickListener {
 
-            listOfDocuments2.clear()
 
+            calculator = 0.0
+            listOfDocuments2.clear()
 
             nameDataSearchText = nameDataSearch.text.toString()
 
-            database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
-                .collection("${nameDataSearchText}").orderBy("order", Query.Direction.DESCENDING)
-
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
-                        for (document in snapshot.documents) {
-
-                            objectDataItem2 = document.toObject()!!
-
-                            listOfDocuments2.add(objectDataItem2)
-
-                            calculator = calculator + objectDataItem2.hours
-                            totalOwnerHours.text = "Total hours $calculator"
 
 
-                            myAdapter.notifyDataSetChanged()
 
 
+                database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
+                    .collection("${nameDataSearchText}").orderBy("order", Query.Direction.DESCENDING)
+
+                    .addSnapshotListener { snapshot, e ->
+                        if (snapshot != null) {
+
+                            for (document in snapshot.documents) {
+
+                                objectDataItem2 = document.toObject()!!
+
+                                listOfDocuments2.add(objectDataItem2)
+
+                                calculator = calculator + objectDataItem2.hours
+
+
+                                    totalOwnerHours.text = "Total hours this month $calculator"
+
+
+
+
+
+                                    myAdapter.notifyDataSetChanged()
+
+
+
+
+
+                            }
                         }
                     }
-                }
 
-            calculator = 0.0
+
+
+
 
         }
 

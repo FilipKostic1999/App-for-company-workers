@@ -29,7 +29,6 @@ class WorkerProfile : AppCompatActivity() {
     lateinit var dateWork : TextView
     lateinit var workHoursEditText : TextView
     lateinit var totalTextview : TextView
-    lateinit var counterText : TextView
 
 
    lateinit var objectDataItem : objectData
@@ -42,6 +41,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
     lateinit var database : FirebaseFirestore
+    lateinit var nameInDatabase : username
 
 
     lateinit var auth : FirebaseAuth
@@ -75,16 +75,7 @@ class WorkerProfile : AppCompatActivity() {
 
         recyclerView.adapter = myAdapter
 
-
-
-
-
-
-
-
-        var sharedN = getSharedPreferences("Name", AppCompatActivity.MODE_PRIVATE)
-        var Name = sharedN.getString("Name", "")
-
+        listOfDocuments.clear()
 
 
 
@@ -93,34 +84,28 @@ class WorkerProfile : AppCompatActivity() {
 
 
         database = Firebase.firestore
-
         auth = Firebase.auth
-
         val user = auth.currentUser
 
 
 
+
+
         personC = findViewById(R.id.editTextTextPersonComment)
-        personN = findViewById(R.id.editName)
+        personN = findViewById(R.id.nameText)
         dateWork = findViewById(R.id.dayOfWork)
-        counterText = findViewById(R.id.counterText)
         workHoursEditText = findViewById(R.id.workHoursEditText)
         totalTextview = findViewById(R.id.totalTextView)
+        logOut = findViewById(R.id.workerLogOut)
 
         totalTextview.isVisible = false
 
 
 
 
-        counterText.isVisible = false
+        var path = personN.text.toString()
 
 
-
-
-
-        if (personN.text != null) {
-            personN.text = "$Name"
-        }
 
 
 
@@ -129,35 +114,86 @@ class WorkerProfile : AppCompatActivity() {
 
 
         if (user != null && personN.text != null) {
-            database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
-                .collection("${personN.text} cronology").orderBy("order", Query.Direction.DESCENDING)
+
+            database.collection("users").document(user.uid)
+                .collection("Data of user")
 
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
                         for (document in snapshot.documents) {
 
-                            objectDataItem = document.toObject()!!
-
-                            listOfDocuments.add(objectDataItem)
-
-
-                                counter = counter + objectDataItem.preOrder
-                                calculator = calculator + objectDataItem.hours
-                                Log.d("!!!", "$calculator" )
-
-
-                            myAdapter.notifyDataSetChanged()
+                            nameInDatabase = document.toObject()!!
 
 
 
-                            totalTextview.text = "$calculator"
+
+                            Log.d("!!!", "${nameInDatabase.name}" )
+
+
+
+                            personN.text = "${nameInDatabase.name}"
+                            path = personN.text.toString()
+
+
+
+
+                            if (user != null && personN.text != null) {
+
+
+
+                                database.collection("users").document(user.uid)
+                                    .collection("$path Month").orderBy("order", Query.Direction.DESCENDING)
+
+                                    .addSnapshotListener { snapshot, e ->
+                                        if (snapshot != null) {
+                                            for (document in snapshot.documents) {
+
+                                                objectDataItem = document.toObject()!!
+
+                                                listOfDocuments.add(objectDataItem)
+
+
+                                                counter += objectDataItem.preOrder
+                                                calculator += objectDataItem.hours
+
+
+
+                                                myAdapter.notifyDataSetChanged()
+
+                                                Log.d("!!!", "$path" )
+
+
+
+                                                totalTextview.text = "$calculator"
+
+
+                                            }
+                                        }
+                                    }
+
+                            }
+
+
+
+
+
+
+
+
+
+
+
 
 
                         }
                     }
                 }
 
-              }
+
+
+
+
+        }
 
 
 
@@ -166,40 +202,14 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        logOut = findViewById(R.id.workerLogOut)
 
         logOut.setOnClickListener {
 
 
-            listOfDocuments.clear()
+
 
 
             saveItem()
-
-            Name = personN.text.toString()
-
-            val editName = sharedN.edit()
-            editName.putString("Name", Name)
-            editName.commit()
-
-            personN.text = "$Name"
-
-
 
 
         }
@@ -216,6 +226,12 @@ class WorkerProfile : AppCompatActivity() {
     }
 
 
+
+
+
+
+
+
     fun saveItem() {
 
         var path = personN.text.toString()
@@ -223,26 +239,37 @@ class WorkerProfile : AppCompatActivity() {
         val finalHours = calculator + workHoursEditText.text.toString().toDouble()
 
 
-      var IntCounterText = counter + counterText.text.toString().toInt()
+        counter += 1
+
 
         val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
-            totalHours = finalHours, userIdentity = personN.text.toString(), order = IntCounterText, date = dayOfWork,
-        preOrder = counterText.text.toString().toInt())
+            totalHours = finalHours, userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
+            preOrder = 1)
 
 
 
-
-        database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
-            .collection("$path").add(item)
+        listOfDocuments.clear()
 
 
-            .addOnCompleteListener {
+
+         val user = auth.currentUser
+
+        if (user != null) {
+
+            database.collection("users").document(user.uid)
+                .collection("$path Month").add(item)
 
 
-                Log.d("!!!", "item saved")
+                .addOnCompleteListener {
 
 
-            }
+                    Log.d("!!!", "item saved")
+
+
+                }
+
+
+        }
 
 
 
@@ -259,14 +286,14 @@ class WorkerProfile : AppCompatActivity() {
 
         personC.text = ""
         workHoursEditText.text = ""
-        dateWork.text = "Date"
+        dateWork.text = ""
 
 
         calculator = 0.0
         counter = 0
 
 
-        val user = auth.currentUser
+
 
 
         if (user == null) {
@@ -278,8 +305,23 @@ class WorkerProfile : AppCompatActivity() {
         path = "$path cronology"
 
 
-        database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
+        database.collection("users").document("Main")
             .collection("$path").add(item)
+
+
+            .addOnCompleteListener {
+
+
+                Log.d("!!!", "item saved")
+
+
+            }
+
+
+
+
+        database.collection("users").document(user.uid)
+            .collection("cronology").add(item)
 
 
             .addOnCompleteListener {
@@ -296,7 +338,13 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-     /*   database.collection("users").document(user.uid).collection("Items").add(item)
+
+/*
+
+update
+
+        database.collection("users").document(user.uid).collection("Itemsssss")
+            .document("hmkogjk").set(item)
 
 
             .addOnCompleteListener {
@@ -305,14 +353,18 @@ class WorkerProfile : AppCompatActivity() {
                 Log.d("!!!", "item saved")
 
 
-            } */
+            }
+
+*/
+
+       /* database.collection("users").document(user.uid).collection("ncidnvci").document("ku")
+            .update(mapOf(
+                "age" to 21,
+                "favorites.color" to "Red"
+            ))
 
 
-
-
-
-
-
+*/
 
 
 
