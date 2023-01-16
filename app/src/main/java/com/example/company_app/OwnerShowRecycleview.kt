@@ -260,7 +260,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                                 listOfDocuments2.add(objectDataItem2)
 
                                 calculator = calculator + objectDataItem2.hours
-                                counter += objectDataItem2.preOrder
+                                counter = objectDataItem2.order
 
 
                                     totalOwnerHours.text = "Total hours this month $calculator"
@@ -300,19 +300,22 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+    @SuppressLint("SuspiciousIndentation")
+
     fun deleteItems() {
 
 
+        counter ++
 
         if (counter > 0) {
 
-            var numberSelector = 1
+            var numberSelector = 0
 
-            while (counter >= numberSelector) {
+            while (numberSelector < 34) {
 
 
                 var path = nameDataSearch.text.toString()
-                var docNumberId : Int = numberSelector
+                var docNumberId : Int = counter
                 var docNumberIdString = docNumberId.toString()
 
 
@@ -338,6 +341,15 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
                 numberSelector ++
+
+
+                if (counter > 0) {
+
+                    counter--
+
+
+
+                }
 
 
 
