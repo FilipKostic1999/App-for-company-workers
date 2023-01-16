@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -84,6 +85,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
         listOfDocuments2 = arrayListOf()
         listOfDocuments2.clear()
+        deleteBtn.isVisible = false
+        deleteBtn.isEnabled = false
         myAdapter = MyAdapter(listOfDocuments2)
         recyclerView.adapter = myAdapter
 
@@ -102,6 +105,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
         calendarB.setOnClickListener {
 
             listOfDocuments2.clear()
+            deleteBtn.isVisible = false
+            deleteBtn.isEnabled = false
 
             calculator = 0.0
 
@@ -239,6 +244,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
             calculator = 0.0
             listOfDocuments2.clear()
+            deleteBtn.isVisible = true
+            deleteBtn.isEnabled = true
             myAdapter.notifyDataSetChanged()
 
             nameDataSearchText = nameDataSearch.text.toString()
