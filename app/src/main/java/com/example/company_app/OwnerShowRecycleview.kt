@@ -34,7 +34,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
     var calculator : Double = 0.0
     var counter : Int = 0
-    var touches = 10
+    var touches = 0
 
     var nameDataSearchText = ""
 
@@ -167,7 +167,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
             database.collection("users").document("Main")
-                .collection("Name collection")
+                .collection("Names")
 
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
