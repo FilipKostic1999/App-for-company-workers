@@ -41,6 +41,7 @@ class WorkerProfile : AppCompatActivity() {
 
     var calculator : Double = 0.0
     var counter : Int = 0
+    private var touches = 0
 
 
     lateinit var database : FirebaseFirestore
@@ -107,7 +108,13 @@ class WorkerProfile : AppCompatActivity() {
         totalTextview.isVisible = false
 
 
+        /*
 
+        val sharedEdited = getSharedPreferences("isNameEdited", AppCompatActivity.MODE_PRIVATE)
+        var isNameEdited = sharedEdited.getBoolean("isNameEdited", false)
+
+
+         */
 
         var path = personN.text.toString()
 
@@ -142,13 +149,35 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
+                            /*
+
+                            if (isNameEdited) {
+
+                                isNameEdited = false
+
+                                val editName = sharedEdited.edit()
+                                editName.putBoolean("isNameEdited", isNameEdited)
+                                editName.commit()
+
+
+                                val intent = Intent(this, WorkerProfile::class.java)
+                                startActivity(intent)
+
+
+                            }
+
+                            */
+
+
+
+
 
                             if (user != null && personN.text != null) {
 
 
 
                                 database.collection("users").document("Main")
-                                    .collection("$path Month").orderBy("order", Query.Direction.DESCENDING)
+                                    .collection("$path cronology").orderBy("order", Query.Direction.DESCENDING)
 
                                     .addSnapshotListener { snapshot, e ->
                                         if (snapshot != null) {
@@ -197,12 +226,28 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-
         editNameImg.setOnClickListener {
 
-            val intent = Intent(this, createUsername::class.java)
-            startActivity(intent)
+
+            if (touches < 10) {
+
+                touches ++
+
+                Toast.makeText(this, "Touch 10 times", Toast.LENGTH_SHORT).show()
+
+            }
+
+
+
+            if (touches == 10) {
+
+                val intent = Intent(this, createUsername::class.java)
+                startActivity(intent)
+
+
+
+            }
+
 
 
 
@@ -225,8 +270,6 @@ class WorkerProfile : AppCompatActivity() {
 
              saveItem()
 
-           //  deleteItems()
-
 
         }
 
@@ -241,66 +284,6 @@ class WorkerProfile : AppCompatActivity() {
 
     }
 
-
-
-
-    fun deleteItems() {
-
-
-
-        if (counter > 0) {
-
-        var numberSelector = 1
-
-            while (counter >= numberSelector) {
-
-
-                var path = personN.text.toString()
-                var docNumberId : Int = numberSelector
-                var docNumberIdString = docNumberId.toString()
-
-
-
-                val user = auth.currentUser
-
-                if (user != null) {
-
-                    database.collection("users").document("Main")
-                        .collection("$path Month").document(docNumberIdString).delete()
-
-
-                        .addOnCompleteListener {
-
-
-                            Log.d("!!!", "item saved")
-
-
-                        }
-
-
-                }
-
-
-
-                numberSelector ++
-
-
-
-              }
-
-
-            Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(this, WorkerProfile::class.java)
-            startActivity(intent)
-
-        }
-
-
-
-
-
-    }
 
 
 

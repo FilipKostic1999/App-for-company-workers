@@ -29,6 +29,9 @@ class createUsername : AppCompatActivity() {
     lateinit var database : FirebaseFirestore
 
 
+    var name = ""
+    var usernameExists : Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,8 @@ class createUsername : AppCompatActivity() {
 
 
 
+                            name = nameInDatabase.name!!
+                            usernameExists = true
 
 
                             createNameEdit.text = "${nameInDatabase.name}"
@@ -125,30 +130,139 @@ class createUsername : AppCompatActivity() {
 
 
 
-
-        val user = firebaseAuth.currentUser
-
-
-        val name = username(name = createNameEdit.text.toString())
+        if (!usernameExists) {
 
 
-        if (user != null) {
-
-            database.collection("users").document(user.uid)
-                .collection("Data of user").document("Username").set(name)
+            val user = firebaseAuth.currentUser
 
 
-                .addOnCompleteListener {
+            val nameDoc = username(name = createNameEdit.text.toString())
+                name = createNameEdit.text.toString()
 
 
-                    Log.d("!!!", "item saved")
+            if (user != null) {
+
+                database.collection("users").document(user.uid)
+                    .collection("Data of user").document("$name").set(nameDoc)
 
 
-                }
+                    .addOnCompleteListener {
+
+
+                        Log.d("!!!", "item saved")
+
+
+                    }
+
+
+
+
+
+                database.collection("users").document("Main")
+                    .collection("Names").document("$name").set(nameDoc)
+
+
+                    .addOnCompleteListener {
+
+
+                        Log.d("!!!", "item saved")
+
+
+                    }
+
+
+
+
+
+
+
+
+            }
+
+
 
         }
 
 
+
+        if (usernameExists) {
+
+
+            val user = firebaseAuth.currentUser
+
+
+            val nameDoc = username(name = createNameEdit.text.toString())
+
+
+            if (user != null) {
+
+
+
+                database.collection("users").document("Main")
+                    .collection("Names").document("$name").delete()
+
+
+                    .addOnCompleteListener {
+
+                        database.collection("users").document(user.uid)
+                            .collection("Data of user").document("$name").delete()
+
+
+                            .addOnCompleteListener {
+
+
+                                name = createNameEdit.text.toString()
+
+
+                                database.collection("users").document(user.uid)
+                                    .collection("Data of user").document("$name").set(nameDoc)
+
+
+                                    .addOnCompleteListener {
+
+
+                                        Log.d("!!!", "item deleted and saved")
+
+
+                                    }
+
+
+
+
+
+                                database.collection("users").document("Main")
+                                    .collection("Names").document("$name").set(nameDoc)
+
+
+                                    .addOnCompleteListener {
+
+
+                                        Log.d("!!!", "item saved")
+
+
+                                    }
+
+
+
+
+
+
+
+                            }
+
+
+
+                    }
+
+
+
+
+
+            }
+
+
+
+        }
 
 
 

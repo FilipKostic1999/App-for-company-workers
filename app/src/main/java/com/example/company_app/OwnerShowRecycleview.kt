@@ -1,9 +1,11 @@
 package com.example.company_app
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -26,10 +28,13 @@ class OwnerShowRecycleview : AppCompatActivity() {
     lateinit var calendarB : ImageView
     lateinit var nameDataSearch : TextView
     lateinit var totalOwnerHours : TextView
+    lateinit var deleteBtn : Button
 
 
 
     var calculator : Double = 0.0
+    var counter : Int = 0
+    var touches = 10
 
     var nameDataSearchText = ""
 
@@ -40,6 +45,14 @@ class OwnerShowRecycleview : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var listOfDocuments2 : ArrayList<objectData>
     private lateinit var myAdapter: MyAdapter
+
+
+    lateinit var names : username
+
+    private lateinit var recyclerViewNames: RecyclerView
+    private lateinit var listOfNames : ArrayList<username>
+    private lateinit var myAdapterNames: MyAdapterName
+
 
     @SuppressLint("SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,11 +67,18 @@ class OwnerShowRecycleview : AppCompatActivity() {
         recyclerView.setHasFixedSize(true)
 
 
+        recyclerViewNames = findViewById(R.id.recyclerViewOwnerNames)
+        recyclerViewNames.layoutManager = LinearLayoutManager(this)
+        recyclerViewNames.setHasFixedSize(true)
+
+
+
 
         monthB = findViewById(R.id.monthB)
         calendarB = findViewById(R.id.calendarB)
         nameDataSearch = findViewById(R.id.nameDataSearch)
         totalOwnerHours = findViewById(R.id.totalOwnerHours)
+        deleteBtn = findViewById(R.id.deleteBtn)
 
 
 
@@ -67,6 +87,10 @@ class OwnerShowRecycleview : AppCompatActivity() {
         myAdapter = MyAdapter(listOfDocuments2)
         recyclerView.adapter = myAdapter
 
+
+        listOfNames = arrayListOf()
+        myAdapterNames = MyAdapterName(listOfNames)
+        recyclerViewNames.adapter = myAdapterNames
 
 
 
@@ -87,7 +111,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-                database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
+                database.collection("users").document("Main")
                     .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
 
                     .addSnapshotListener { snapshot, e ->
@@ -101,6 +125,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                                     listOfDocuments2.add(objectDataItem2)
 
                                     calculator = calculator + objectDataItem2.hours
+
 
 
                                     totalOwnerHours.text = "Total hours in cronology $calculator"
@@ -133,11 +158,88 @@ class OwnerShowRecycleview : AppCompatActivity() {
         }
 
 
+
+
+
+
+
+
+
+
+            database.collection("users").document("Main")
+                .collection("Name collection")
+
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        for (document in snapshot.documents) {
+
+                            names = document.toObject()!!
+
+
+                            listOfNames.add(names)
+
+
+
+                            myAdapterNames.notifyDataSetChanged()
+
+
+
+
+
+                        }
+                    }
+                }
+
+
+
+
+
+
+
+        deleteBtn.setOnClickListener {
+
+
+
+            if (touches < 10) {
+
+                touches ++
+
+                Toast.makeText(this, "Touch 10 times", Toast.LENGTH_SHORT).show()
+
+            }
+
+
+
+            if (touches == 10) {
+
+                deleteItems()
+
+
+            }
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         monthB.setOnClickListener {
 
 
             calculator = 0.0
             listOfDocuments2.clear()
+            myAdapter.notifyDataSetChanged()
 
             nameDataSearchText = nameDataSearch.text.toString()
 
@@ -145,8 +247,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-                database.collection("users").document("MgSwnd5aNsOoB7FHxUBm146pktp1")
-                    .collection("${nameDataSearchText}").orderBy("order", Query.Direction.DESCENDING)
+                database.collection("users").document("Main")
+                    .collection("${nameDataSearchText} Month").orderBy("order", Query.Direction.DESCENDING)
 
                     .addSnapshotListener { snapshot, e ->
                         if (snapshot != null) {
@@ -158,6 +260,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                                 listOfDocuments2.add(objectDataItem2)
 
                                 calculator = calculator + objectDataItem2.hours
+                                counter += objectDataItem2.preOrder
 
 
                                     totalOwnerHours.text = "Total hours this month $calculator"
@@ -185,4 +288,84 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    fun deleteItems() {
+
+
+
+        if (counter > 0) {
+
+            var numberSelector = 1
+
+            while (counter >= numberSelector) {
+
+
+                var path = nameDataSearch.text.toString()
+                var docNumberId : Int = numberSelector
+                var docNumberIdString = docNumberId.toString()
+
+
+
+
+
+
+                    database.collection("users").document("Main")
+                        .collection("$path Month").document(docNumberIdString).delete()
+
+
+                        .addOnCompleteListener {
+
+
+                            Log.d("!!!", "item saved")
+
+
+                        }
+
+
+
+
+
+
+                numberSelector ++
+
+
+
+            }
+
+
+            Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(this, OwnerShowRecycleview::class.java)
+            startActivity(intent)
+
+        }
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 }
