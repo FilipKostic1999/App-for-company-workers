@@ -1,9 +1,11 @@
 package com.example.company_app
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +31,7 @@ class WorkerProfile : AppCompatActivity() {
     lateinit var dateWork : TextView
     lateinit var workHoursEditText : TextView
     lateinit var totalTextview : TextView
+    lateinit var editNameImg : ImageView
 
 
    lateinit var objectDataItem : objectData
@@ -97,6 +100,9 @@ class WorkerProfile : AppCompatActivity() {
         workHoursEditText = findViewById(R.id.workHoursEditText)
         totalTextview = findViewById(R.id.totalTextView)
         logOut = findViewById(R.id.workerLogOut)
+        editNameImg = findViewById(R.id.editNameImg)
+
+
 
         totalTextview.isVisible = false
 
@@ -141,7 +147,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-                                database.collection("users").document(user.uid)
+                                database.collection("users").document("Main")
                                     .collection("$path Month").orderBy("order", Query.Direction.DESCENDING)
 
                                     .addSnapshotListener { snapshot, e ->
@@ -178,18 +184,25 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-
-
-
-
-
-
                         }
                     }
                 }
 
 
+
+        }
+
+
+
+
+
+
+
+
+        editNameImg.setOnClickListener {
+
+            val intent = Intent(this, createUsername::class.java)
+            startActivity(intent)
 
 
 
@@ -209,7 +222,10 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-            saveItem()
+
+             saveItem()
+
+           //  deleteItems()
 
 
         }
@@ -228,6 +244,64 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
+    fun deleteItems() {
+
+
+
+        if (counter > 0) {
+
+        var numberSelector = 1
+
+            while (counter >= numberSelector) {
+
+
+                var path = personN.text.toString()
+                var docNumberId : Int = numberSelector
+                var docNumberIdString = docNumberId.toString()
+
+
+
+                val user = auth.currentUser
+
+                if (user != null) {
+
+                    database.collection("users").document("Main")
+                        .collection("$path Month").document(docNumberIdString).delete()
+
+
+                        .addOnCompleteListener {
+
+
+                            Log.d("!!!", "item saved")
+
+
+                        }
+
+
+                }
+
+
+
+                numberSelector ++
+
+
+
+              }
+
+
+            Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(this, WorkerProfile::class.java)
+            startActivity(intent)
+
+        }
+
+
+
+
+
+    }
+
 
 
 
@@ -240,6 +314,9 @@ class WorkerProfile : AppCompatActivity() {
 
 
         counter += 1
+
+        var docNumberId : Int = counter
+        var docNumberIdString = docNumberId.toString()
 
 
         val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
@@ -256,8 +333,8 @@ class WorkerProfile : AppCompatActivity() {
 
         if (user != null) {
 
-            database.collection("users").document(user.uid)
-                .collection("$path Month").add(item)
+            database.collection("users").document("Main")
+                .collection("$path Month").document(docNumberIdString).set(item)
 
 
                 .addOnCompleteListener {
@@ -296,6 +373,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
+
         if (user == null) {
             return
         }
@@ -320,17 +398,6 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-        database.collection("users").document(user.uid)
-            .collection("cronology").add(item)
-
-
-            .addOnCompleteListener {
-
-
-                Log.d("!!!", "item saved")
-
-
-            }
 
 
 

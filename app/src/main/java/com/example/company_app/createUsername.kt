@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,6 +19,7 @@ class createUsername : AppCompatActivity() {
 
 
     lateinit var  createNameEdit : TextView
+    lateinit var nameInDatabase : username
 
     lateinit var saveNameBtn : Button
 
@@ -42,6 +44,47 @@ class createUsername : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         database = Firebase.firestore
         firebaseAuth = Firebase.auth
+
+
+        val user = firebaseAuth.currentUser
+
+
+
+
+        if (user != null) {
+
+            database.collection("users").document(user.uid)
+                .collection("Data of user")
+
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        for (document in snapshot.documents) {
+
+                            nameInDatabase = document.toObject()!!
+
+
+
+
+
+                            createNameEdit.text = "${nameInDatabase.name}"
+
+
+                        }
+
+                    }
+
+                }
+
+
+        }
+
+
+
+
+
+
+
+
 
 
 
@@ -114,6 +157,11 @@ class createUsername : AppCompatActivity() {
 
 
 
+    }
+
+
+    override fun onBackPressed() {
+        Toast.makeText(this, "Confirm your username", Toast.LENGTH_SHORT).show()
     }
 
 

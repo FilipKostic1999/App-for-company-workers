@@ -20,9 +20,10 @@
         android:id="@+id/calendarB"
         android:layout_width="97dp"
         android:layout_height="70dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.949"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/calendar" />
 
@@ -30,8 +31,9 @@
         android:id="@+id/monthB"
         android:layout_width="93dp"
         android:layout_height="72dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/monthi" />
@@ -40,11 +42,11 @@
         android:id="@+id/nameDataSearch"
         android:layout_width="131dp"
         android:layout_height="56dp"
-        android:layout_marginStart="140dp"
         android:layout_marginTop="32dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

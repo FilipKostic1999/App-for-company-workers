@@ -22,9 +22,10 @@
         android:id="@+id/workerLogOut"
         android:layout_width="84dp"
         android:layout_height="56dp"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="196dp"
         android:text="save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.951"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,10 +57,11 @@
 
     <TextView
         android:id="@+id/totalTextView"
-        android:layout_width="99dp"
-        android:layout_height="38dp"
-        android:layout_marginStart="308dp"
-        android:layout_marginTop="228dp"
+        android:layout_width="55dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="204dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.654"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,10 +91,11 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
-        android:text="Name"
+        android:layout_marginTop="140dp"
+        android:textStyle="bold"
+        android:text="Welcome back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.117"
+        app:layout_constraintHorizontal_bias="0.128"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,13 +103,34 @@
         android:id="@+id/nameText"
         android:layout_width="97dp"
         android:layout_height="54dp"
+        android:layout_marginTop="164dp"
         android:textSize="16dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/editNameImg"
+        android:layout_width="42dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="232dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.239" />
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="240dp"
+        android:text="Edit name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
