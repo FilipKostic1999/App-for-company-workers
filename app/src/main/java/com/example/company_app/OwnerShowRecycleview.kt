@@ -38,6 +38,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
     var touches = 0
 
     var nameDataSearchText = ""
+    var listOfCounters = ArrayList<Int>()
 
 
 
@@ -92,6 +93,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
         listOfNames = arrayListOf()
+        listOfNames.clear()
         myAdapterNames = MyAdapterName(listOfNames)
         recyclerViewNames.adapter = myAdapterNames
 
@@ -127,9 +129,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
                                 objectDataItem2 = document.toObject()!!
 
 
-                                    listOfDocuments2.add(objectDataItem2)
-
-                                    calculator = calculator + objectDataItem2.hours
+                                listOfDocuments2.add(objectDataItem2)
+                                calculator = calculator + objectDataItem2.hours
 
 
 
@@ -155,7 +156,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-
+            listOfDocuments2.clear()
 
 
 
@@ -267,7 +268,9 @@ class OwnerShowRecycleview : AppCompatActivity() {
                                 listOfDocuments2.add(objectDataItem2)
 
                                 calculator = calculator + objectDataItem2.hours
+                                listOfCounters.add(objectDataItem2.order)
                                 counter = objectDataItem2.order
+
 
 
                                     totalOwnerHours.text = "Total hours this month $calculator"
@@ -287,7 +290,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                     }
 
 
-
+            listOfDocuments2.clear()
 
 
         }
@@ -307,23 +310,25 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-    @SuppressLint("SuspiciousIndentation")
 
+    @SuppressLint("SuspiciousIndentation")
     fun deleteItems() {
 
 
-        counter ++
+        var highestCounter = listOfCounters.maxOrNull()
 
-        if (counter > 0) {
+        if (highestCounter != null) {
 
-            var numberSelector = 0
+            if (highestCounter > 0) {
 
-            while (numberSelector < 34) {
+                var numberSelector = 0
+
+                while (numberSelector < 34) {
 
 
-                var path = nameDataSearch.text.toString()
-                var docNumberId : Int = counter
-                var docNumberIdString = docNumberId.toString()
+                    var path = nameDataSearch.text.toString()
+                    var docNumberId : Int = highestCounter
+                    var docNumberIdString = docNumberId.toString()
 
 
 
@@ -337,7 +342,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                         .addOnCompleteListener {
 
 
-                            Log.d("!!!", "item saved")
+                            Log.d("!!!", "$docNumberId")
 
 
                         }
@@ -347,27 +352,28 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-                numberSelector ++
+                    numberSelector ++
 
 
-                if (counter > 0) {
+                    if (highestCounter > 0) {
 
-                    counter--
+                        highestCounter--
+
+
+
+                    }
 
 
 
                 }
 
 
+                Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(this, OwnerShowRecycleview::class.java)
+                startActivity(intent)
 
             }
-
-
-            Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(this, OwnerShowRecycleview::class.java)
-            startActivity(intent)
-
         }
 
 

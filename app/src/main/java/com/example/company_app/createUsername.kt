@@ -17,20 +17,18 @@ import com.google.firebase.ktx.Firebase
 class createUsername : AppCompatActivity() {
 
 
+    lateinit var createNameEdit: TextView
+    lateinit var nameInDatabase: username
 
-    lateinit var  createNameEdit : TextView
-    lateinit var nameInDatabase : username
-
-    lateinit var saveNameBtn : Button
-
+    lateinit var saveNameBtn: Button
 
 
     private lateinit var firebaseAuth: FirebaseAuth
-    lateinit var database : FirebaseFirestore
+    lateinit var database: FirebaseFirestore
 
 
     var name = ""
-    var usernameExists : Boolean = false
+    var usernameExists: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,23 +82,6 @@ class createUsername : AppCompatActivity() {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         saveNameBtn.setOnClickListener {
 
 
@@ -110,24 +91,13 @@ class createUsername : AppCompatActivity() {
             startActivity(intent)
 
 
-
         }
-
-
-
 
 
     }
 
 
-
-
-
-
-
-
     fun saveName() {
-
 
 
         if (!usernameExists) {
@@ -137,7 +107,7 @@ class createUsername : AppCompatActivity() {
 
 
             val nameDoc = username(name = createNameEdit.text.toString())
-                name = createNameEdit.text.toString()
+            name = createNameEdit.text.toString()
 
 
             if (user != null) {
@@ -171,14 +141,7 @@ class createUsername : AppCompatActivity() {
                     }
 
 
-
-
-
-
-
-
             }
-
 
 
         }
@@ -195,7 +158,6 @@ class createUsername : AppCompatActivity() {
 
 
             if (user != null) {
-
 
 
                 database.collection("users").document("Main")
@@ -243,32 +205,16 @@ class createUsername : AppCompatActivity() {
                                     }
 
 
-
-
-
-
-
                             }
-
 
 
                     }
 
 
-
-
-
             }
 
 
-
         }
-
-
-
-
-
-
 
 
     }
@@ -277,14 +223,6 @@ class createUsername : AppCompatActivity() {
     override fun onBackPressed() {
         Toast.makeText(this, "Confirm your username", Toast.LENGTH_SHORT).show()
     }
-
-
-
-
-
-
-
-
 
 
 }

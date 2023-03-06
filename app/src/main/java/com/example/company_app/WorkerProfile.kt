@@ -303,7 +303,7 @@ class WorkerProfile : AppCompatActivity() {
 
 
         val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
-            totalHours = finalHours, userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
+            totalHours = workHoursEditText.text.toString().toDouble(), userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
             preOrder = 1)
 
 
