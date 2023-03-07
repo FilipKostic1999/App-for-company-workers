@@ -151,48 +151,25 @@ class OwnerShowRecycleview : AppCompatActivity() {
             nameDataSearchText = nameDataSearch.text.toString()
 
 
-
-
-
             database.collection("users").document("Main")
-                .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
+                .collection("$nameDataSearchText cronology").orderBy("order", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
 
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
+                        objectDataItem2 = document.toObject()!!
+                        listOfDocuments2.add(objectDataItem2)
+                        calculator += objectDataItem2.hours
+                        totalOwnerHours.text = "Total hours in cronology $calculator"
+                        myAdapter.notifyDataSetChanged()
 
-                        for (document in snapshot.documents) {
-
-                            objectDataItem2 = document.toObject()!!
-
-
-                            listOfDocuments2.add(objectDataItem2)
-                            calculator = calculator + objectDataItem2.hours
-
-
-
-                            totalOwnerHours.text = "Total hours in cronology $calculator"
-
-
-
-
-
-
-                            myAdapter.notifyDataSetChanged()
-
-
-
-
-
-
-
-                        }
                     }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("!!!", "Error getting documents: ")
                 }
 
 
-
-
-            listOfDocuments2.clear()
 
         }
 
@@ -247,44 +224,24 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+            database.collection("users").document("Main")
+                .collection("$nameDataSearchText Month").orderBy("order", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
 
+                        objectDataItem2 = document.toObject()!!
+                        listOfDocuments2.add(objectDataItem2)
+                        calculator += objectDataItem2.hours
+                        totalOwnerHours.text = "Total hours in cronology $calculator"
+                        myAdapter.notifyDataSetChanged()
 
-                database.collection("users").document("Main")
-                    .collection("${nameDataSearchText} Month").orderBy("order", Query.Direction.DESCENDING)
-
-                    .addSnapshotListener { snapshot, e ->
-                        if (snapshot != null) {
-
-                            for (document in snapshot.documents) {
-
-                                objectDataItem2 = document.toObject()!!
-
-                                listOfDocuments2.add(objectDataItem2)
-
-                                calculator = calculator + objectDataItem2.hours
-                                listOfCounters.add(objectDataItem2.order)
-                                counter = objectDataItem2.order
-
-
-
-                                    totalOwnerHours.text = "Total hours this month $calculator"
-
-
-
-
-
-                                    myAdapter.notifyDataSetChanged()
-
-
-
-
-
-                            }
-                        }
                     }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("!!!", "Error getting documents: ")
+                }
 
-
-            listOfDocuments2.clear()
 
 
         }
