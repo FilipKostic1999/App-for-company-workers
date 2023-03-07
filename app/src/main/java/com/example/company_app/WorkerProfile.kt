@@ -32,6 +32,7 @@ class WorkerProfile : AppCompatActivity() {
     lateinit var workHoursEditText : TextView
     lateinit var totalTextview : TextView
     lateinit var editNameImg : ImageView
+    lateinit var workerProfLogOutBtn : Button
 
 
    lateinit var objectDataItem : objectData
@@ -102,22 +103,19 @@ class WorkerProfile : AppCompatActivity() {
         totalTextview = findViewById(R.id.totalTextView)
         logOut = findViewById(R.id.workerLogOut)
         editNameImg = findViewById(R.id.editNameImg)
+        workerProfLogOutBtn = findViewById(R.id.workerProfLogOutBtn)
 
 
 
         totalTextview.isVisible = false
 
 
-        /*
-
-        val sharedEdited = getSharedPreferences("isNameEdited", AppCompatActivity.MODE_PRIVATE)
-        var isNameEdited = sharedEdited.getBoolean("isNameEdited", false)
+        val sharedUserN = getSharedPreferences("userName", AppCompatActivity.MODE_PRIVATE)
+        var userName = sharedUserN.getString("userName", "")
 
 
-         */
-
-        var path = personN.text.toString()
-
+        personN.text = "$userName"
+        var path = userName
 
 
 
@@ -128,98 +126,52 @@ class WorkerProfile : AppCompatActivity() {
 
         if (user != null && personN.text != null) {
 
-            database.collection("users").document(user.uid)
-                .collection("Data of user")
+
+
+            database.collection("users").document("Main")
+                .collection("$path cronology").orderBy("order", Query.Direction.DESCENDING)
 
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
                         for (document in snapshot.documents) {
 
-                            nameInDatabase = document.toObject()!!
+                            objectDataItem = document.toObject()!!
+
+                            listOfDocuments.add(objectDataItem)
+
+
+                            counter += objectDataItem.preOrder
+                            calculator += objectDataItem.hours
 
 
 
+                            myAdapter.notifyDataSetChanged()
 
-                            Log.d("!!!", "${nameInDatabase.name}" )
-
-
-
-                            personN.text = "${nameInDatabase.name}"
-                            path = personN.text.toString()
+                            Log.d("!!!", "$path" )
 
 
 
-                            /*
-
-                            if (isNameEdited) {
-
-                                isNameEdited = false
-
-                                val editName = sharedEdited.edit()
-                                editName.putBoolean("isNameEdited", isNameEdited)
-                                editName.commit()
-
-
-                                val intent = Intent(this, WorkerProfile::class.java)
-                                startActivity(intent)
-
-
-                            }
-
-                            */
-
-
-
-
-
-                            if (user != null && personN.text != null) {
-
-
-
-                                database.collection("users").document("Main")
-                                    .collection("$path cronology").orderBy("order", Query.Direction.DESCENDING)
-
-                                    .addSnapshotListener { snapshot, e ->
-                                        if (snapshot != null) {
-                                            for (document in snapshot.documents) {
-
-                                                objectDataItem = document.toObject()!!
-
-                                                listOfDocuments.add(objectDataItem)
-
-
-                                                counter += objectDataItem.preOrder
-                                                calculator += objectDataItem.hours
-
-
-
-                                                myAdapter.notifyDataSetChanged()
-
-                                                Log.d("!!!", "$path" )
-
-
-
-                                                totalTextview.text = "$calculator"
-
-
-                                            }
-                                        }
-                                    }
-
-                            }
-
-
-
-
+                            totalTextview.text = "$calculator"
 
 
                         }
                     }
                 }
 
-
-
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -255,6 +207,20 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
+
+        workerProfLogOutBtn.setOnClickListener {
+
+            userName = ""
+
+            val editUserName = sharedUserN.edit()
+            editUserName.putString("userName", userName)
+            editUserName.commit()
+
+            val intent = Intent(this, WorkerSignIn::class.java)
+            startActivity(intent)
+
+
+        }
 
 
 
@@ -300,10 +266,11 @@ class WorkerProfile : AppCompatActivity() {
 
         var docNumberId : Int = counter
         var docNumberIdString = docNumberId.toString()
+        var counterDouble = counter.toDouble()
 
 
         val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
-            totalHours = workHoursEditText.text.toString().toDouble(), userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
+            totalHours = counterDouble, userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
             preOrder = 1)
 
 
@@ -344,22 +311,20 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-        personC.text = ""
-        workHoursEditText.text = ""
-        dateWork.text = ""
+        personC.text = "Add comment"
+        workHoursEditText.text = "0"
+        dateWork.text = "Date"
 
 
         calculator = 0.0
         counter = 0
+        counterDouble = 0.0
 
 
 
 
 
 
-        if (user == null) {
-            return
-        }
 
 
 
@@ -383,6 +348,9 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
+        if (user == null) {
+            return
+        }
 
 
 
@@ -426,6 +394,14 @@ update
 
 
     }
+
+
+
+
+    override fun onBackPressed() {
+        Toast.makeText(this, "Use the logout button!", Toast.LENGTH_SHORT).show()
+    }
+
 
 
 

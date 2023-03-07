@@ -30,6 +30,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
     lateinit var nameDataSearch : TextView
     lateinit var totalOwnerHours : TextView
     lateinit var deleteBtn : Button
+    lateinit var deleteDayBtn : Button
 
 
 
@@ -81,6 +82,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
         nameDataSearch = findViewById(R.id.nameDataSearch)
         totalOwnerHours = findViewById(R.id.totalOwnerHours)
         deleteBtn = findViewById(R.id.deleteBtn)
+        deleteDayBtn = findViewById(R.id.deleteDayBtn)
 
 
 
@@ -104,7 +106,41 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+
+
+
+        database.collection("users").document("Main")
+            .collection("Names")
+
+            .addSnapshotListener { snapshot, e ->
+                if (snapshot != null) {
+                    for (document in snapshot.documents) {
+
+                        names = document.toObject()!!
+
+
+                        listOfNames.add(names)
+
+
+
+                        myAdapterNames.notifyDataSetChanged()
+
+
+
+
+
+                    }
+                }
+            }
+
+
+
+
+
+
+
         calendarB.setOnClickListener {
+
 
             listOfDocuments2.clear()
             deleteBtn.isVisible = false
@@ -118,75 +154,32 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
-                database.collection("users").document("Main")
-                    .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
-
-                    .addSnapshotListener { snapshot, e ->
-                        if (snapshot != null) {
-
-                            for (document in snapshot.documents) {
-
-                                objectDataItem2 = document.toObject()!!
-
-
-                                listOfDocuments2.add(objectDataItem2)
-                                calculator = calculator + objectDataItem2.hours
-
-
-
-                                    totalOwnerHours.text = "Total hours in cronology $calculator"
-
-
-
-
-
-
-                                    myAdapter.notifyDataSetChanged()
-
-
-
-
-
-
-
-                            }
-                        }
-                    }
-
-
-
-
-            listOfDocuments2.clear()
-
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-
             database.collection("users").document("Main")
-                .collection("Names")
+                .collection("${nameDataSearchText} cronology").orderBy("order", Query.Direction.DESCENDING)
 
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
+
                         for (document in snapshot.documents) {
 
-                            names = document.toObject()!!
+                            objectDataItem2 = document.toObject()!!
 
 
-                            listOfNames.add(names)
+                            listOfDocuments2.add(objectDataItem2)
+                            calculator = calculator + objectDataItem2.hours
 
 
 
-                            myAdapterNames.notifyDataSetChanged()
+                            totalOwnerHours.text = "Total hours in cronology $calculator"
+
+
+
+
+
+
+                            myAdapter.notifyDataSetChanged()
+
+
 
 
 
@@ -199,32 +192,33 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+            listOfDocuments2.clear()
+
+        }
+
+
+
+
+
+        deleteDayBtn.setOnClickListener {
+
+
+
+
+        }
 
 
 
         deleteBtn.setOnClickListener {
 
-
-
             if (touches < 10) {
-
                 touches ++
-
                 Toast.makeText(this, "Touch 10 times", Toast.LENGTH_SHORT).show()
-
             }
-
-
 
             if (touches == 10) {
-
                 deleteItems()
-
-
             }
-
-
-
 
         }
 

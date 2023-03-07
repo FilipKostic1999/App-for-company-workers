@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/roof"
     tools:context=".WorkerProfile">
 
     <TextView
@@ -11,6 +12,7 @@
         android:layout_width="57dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:textStyle="bold"
         android:text="Today's work h"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,9 +22,10 @@
 
     <Button
         android:id="@+id/workerLogOut"
-        android:layout_width="84dp"
-        android:layout_height="56dp"
+        android:layout_width="93dp"
+        android:layout_height="41dp"
         android:layout_marginTop="196dp"
+        android:backgroundTint="#4CAF50"
         android:text="save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.951"
@@ -67,9 +70,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="413dp"
-        android:layout_height="422dp"
-        android:layout_marginTop="308dp"
+        android:layout_width="399dp"
+        android:layout_height="411dp"
+        android:layout_marginTop="304dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -127,9 +130,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="240dp"
+        android:textStyle="bold"
         android:text="Edit name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/workerProfLogOutBtn"
+        android:layout_width="93dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="260dp"
+        android:backgroundTint="@color/design_default_color_error"
+        android:text="Logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -76,7 +76,7 @@ class WorkerSignIn : AppCompatActivity() {
 
                 firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        val intent = Intent(this, WorkerProfile:: class.java)
+                        val intent = Intent(this, fetchNameActivity:: class.java)
 
                         startActivity(intent)
                     } else {

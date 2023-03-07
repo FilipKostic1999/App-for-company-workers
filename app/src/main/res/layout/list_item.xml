@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="8dp"
     app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/white"
     android:layout_margin="16dp">
 
     <LinearLayout
@@ -24,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Name: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_Name"
                 android:text="  Name"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -55,8 +56,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Today´s Hours:"
-                android:textColor="@color/white"
+                android:text="Today´s Hours: "
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -65,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvHours"
                 android:text=" 0"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -87,8 +88,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hours added in cronology:"
-                android:textColor="@color/white"
+                android:text="Document id: "
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -97,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvTotalHrs"
                 android:text=" 0"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -118,8 +119,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Comment:"
-                android:textColor="@color/white"
+                android:text="Comment: "
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -128,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvComment"
                 android:text="   Add comment"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
 
@@ -150,8 +151,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Date:"
-                android:textColor="@color/white"
+                android:text="Date: "
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
@@ -160,7 +161,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_date"
                 android:text="  Date"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
