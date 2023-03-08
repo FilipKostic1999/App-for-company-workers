@@ -108,16 +108,21 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+
         database.collection("users").document("Main")
             .collection("Names")
-            .addSnapshotListener { snapshot, e ->
-                if (snapshot != null) {
-                    for (document in snapshot.documents) {
-                        names = document.toObject()!!
-                        listOfNames.add(names)
-                        myAdapterNames.notifyDataSetChanged()
-                    }
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+
+                    names = document.toObject()!!
+                    listOfNames.add(names)
+                    myAdapterNames.notifyDataSetChanged()
+
                 }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("!!!", "Error getting documents: ")
             }
 
 

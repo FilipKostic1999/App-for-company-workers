@@ -2,6 +2,7 @@ package com.example.company_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -72,6 +73,8 @@ class WorkerProfile : AppCompatActivity() {
 
         listOfDocuments = arrayListOf()
 
+
+
         myAdapter = MyAdapter(listOfDocuments)
 
 
@@ -119,86 +122,16 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-
-
-        if (user != null && personN.text != null) {
-
-
-
-            database.collection("users").document("Main")
-                .collection("$path cronology").orderBy("order", Query.Direction.DESCENDING)
-
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
-                        for (document in snapshot.documents) {
-
-                            objectDataItem = document.toObject()!!
-
-                            listOfDocuments.add(objectDataItem)
-
-
-                            counter += objectDataItem.preOrder
-                            calculator += objectDataItem.hours
-
-
-
-                            myAdapter.notifyDataSetChanged()
-
-                            Log.d("!!!", "$path" )
-
-
-
-                            totalTextview.text = "$calculator"
-
-
-                        }
-                    }
-                }
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        fetch()
 
 
 
         editNameImg.setOnClickListener {
 
 
-            if (touches < 10) {
-
-                touches ++
-
-                Toast.makeText(this, "Touch 10 times", Toast.LENGTH_SHORT).show()
-
-            }
 
 
-
-            if (touches == 10) {
-
-                val intent = Intent(this, createUsername::class.java)
-                startActivity(intent)
-
-
-
-            }
-
-
+            Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
 
 
         }
@@ -228,11 +161,15 @@ class WorkerProfile : AppCompatActivity() {
         logOut.setOnClickListener {
 
 
-
-
-
-
              saveItem()
+
+            Toast.makeText(this, "Saving post", Toast.LENGTH_SHORT).show()
+
+            Handler().postDelayed({
+
+                                  fetch()
+
+            }, 2000)
 
 
         }
@@ -249,6 +186,47 @@ class WorkerProfile : AppCompatActivity() {
     }
 
 
+
+
+    fun fetch() {
+
+
+        val user = auth.currentUser
+        val path = personN.text.toString()
+
+        counter = 0
+        calculator = 0.0
+        listOfDocuments.clear()
+
+        if (user != null && personN.text != null) {
+
+
+            database.collection("users").document("Main")
+                .collection("$path cronology")
+                .orderBy("order", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+
+                        objectDataItem = document.toObject()!!
+                        listOfDocuments.add(objectDataItem)
+                        counter += objectDataItem.preOrder
+                        calculator += objectDataItem.hours
+                        myAdapter.notifyDataSetChanged()
+                        Log.d("!!!", "$path")
+                        totalTextview.text = "$calculator"
+
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("!!!", "Error getting documents: ")
+                }
+
+        }
+
+
+
+    }
 
 
 
@@ -285,10 +263,10 @@ class WorkerProfile : AppCompatActivity() {
                 .collection("$path Month").document(docNumberIdString).set(item)
 
 
-                .addOnCompleteListener {
+                .addOnSuccessListener {
 
+                    Toast.makeText(this, "Item correctly saved", Toast.LENGTH_SHORT).show()
 
-                    Log.d("!!!", "item saved")
 
 
                 }
