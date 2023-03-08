@@ -196,7 +196,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                         objectDataItem2 = document.toObject()!!
                         listOfDocuments2.add(objectDataItem2)
                         calculator += objectDataItem2.hours
-                        totalOwnerHours.text = "Total hours in cronology $calculator"
+                        totalOwnerHours.text = "Total hours this month $calculator"
                         myAdapter.notifyDataSetChanged()
 
                     }
