@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -170,6 +171,38 @@ class OwnerShowRecycleview : AppCompatActivity() {
         deleteDayBtn.setOnClickListener {
 
             deleteFrom()
+
+            Handler().postDelayed({
+
+                calculator = 0.0
+                listOfDocuments2.clear()
+                myAdapter.notifyDataSetChanged()
+
+                nameDataSearchText = nameDataSearch.text.toString()
+
+
+
+                database.collection("users").document("Main")
+                    .collection("$nameDataSearchText Month")
+                    .orderBy("order", Query.Direction.DESCENDING)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+
+                            objectDataItem2 = document.toObject()!!
+                            listOfDocuments2.add(objectDataItem2)
+                            calculator += objectDataItem2.hours
+                            totalOwnerHours.text = "Total hours this month $calculator"
+                            myAdapter.notifyDataSetChanged()
+
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d("!!!", "Error getting documents: ")
+                    }
+
+
+            }, 2000)
 
 
         }
