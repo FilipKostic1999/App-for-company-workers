@@ -23,37 +23,36 @@ import com.google.firebase.ktx.Firebase
 class OwnerShowRecycleview : AppCompatActivity() {
 
 
-    lateinit var database : FirebaseFirestore
+    lateinit var database: FirebaseFirestore
 
-    lateinit var monthB : ImageView
-    lateinit var calendarB : ImageView
-    lateinit var nameDataSearch : TextView
-    lateinit var totalOwnerHours : TextView
-    lateinit var deleteBtn : Button
-    lateinit var deleteDayBtn : Button
+    lateinit var monthB: ImageView
+    lateinit var calendarB: ImageView
+    lateinit var nameDataSearch: TextView
+    lateinit var totalOwnerHours: TextView
+    lateinit var fromEditTxt: TextView
+    lateinit var toEditTxt: TextView
+    lateinit var deleteDayBtn: Button
 
 
-
-    var calculator : Double = 0.0
-    var counter : Int = 0
+    var calculator: Double = 0.0
+    var counter: Int = 0
     var touches = 0
 
     var nameDataSearchText = ""
     var listOfCounters = ArrayList<Int>()
 
 
-
-    lateinit var objectDataItem2 : objectData
+    lateinit var objectDataItem2: objectData
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var listOfDocuments2 : ArrayList<objectData>
+    private lateinit var listOfDocuments2: ArrayList<objectData>
     private lateinit var myAdapter: MyAdapter
 
 
-    lateinit var names : username
+    lateinit var names: username
 
     private lateinit var recyclerViewNames: RecyclerView
-    private lateinit var listOfNames : ArrayList<username>
+    private lateinit var listOfNames: ArrayList<username>
     private lateinit var myAdapterNames: MyAdapterName
 
 
@@ -81,15 +80,15 @@ class OwnerShowRecycleview : AppCompatActivity() {
         calendarB = findViewById(R.id.calendarB)
         nameDataSearch = findViewById(R.id.nameDataSearch)
         totalOwnerHours = findViewById(R.id.totalOwnerHours)
-        deleteBtn = findViewById(R.id.deleteBtn)
         deleteDayBtn = findViewById(R.id.deleteDayBtn)
+        toEditTxt = findViewById(R.id.toEditTxt)
+        fromEditTxt = findViewById(R.id.fromEditTxt)
 
 
 
         listOfDocuments2 = arrayListOf()
         listOfDocuments2.clear()
-        deleteBtn.isVisible = false
-        deleteBtn.isEnabled = false
+        deleteDayBtn.isEnabled = false
         myAdapter = MyAdapter(listOfDocuments2)
         recyclerView.adapter = myAdapter
 
@@ -111,24 +110,12 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
         database.collection("users").document("Main")
             .collection("Names")
-
             .addSnapshotListener { snapshot, e ->
                 if (snapshot != null) {
                     for (document in snapshot.documents) {
-
                         names = document.toObject()!!
-
-
                         listOfNames.add(names)
-
-
-
                         myAdapterNames.notifyDataSetChanged()
-
-
-
-
-
                     }
                 }
             }
@@ -143,16 +130,15 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
             listOfDocuments2.clear()
-            deleteBtn.isVisible = false
-            deleteBtn.isEnabled = false
-
+            deleteDayBtn.isEnabled = false
             calculator = 0.0
 
             nameDataSearchText = nameDataSearch.text.toString()
 
 
             database.collection("users").document("Main")
-                .collection("$nameDataSearchText cronology").orderBy("order", Query.Direction.DESCENDING)
+                .collection("$nameDataSearchText cronology")
+                .orderBy("order", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
@@ -170,7 +156,6 @@ class OwnerShowRecycleview : AppCompatActivity() {
                 }
 
 
-
         }
 
 
@@ -179,32 +164,10 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
         deleteDayBtn.setOnClickListener {
 
-
+            deleteFrom()
 
 
         }
-
-
-
-        deleteBtn.setOnClickListener {
-
-            if (touches < 10) {
-                touches ++
-                Toast.makeText(this, "Touch 10 times", Toast.LENGTH_SHORT).show()
-            }
-
-            if (touches == 10) {
-                deleteItems()
-            }
-
-        }
-
-
-
-
-
-
-
 
 
 
@@ -216,8 +179,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
             calculator = 0.0
             listOfDocuments2.clear()
-            deleteBtn.isVisible = true
-            deleteBtn.isEnabled = true
+            deleteDayBtn.isEnabled = true
             myAdapter.notifyDataSetChanged()
 
             nameDataSearchText = nameDataSearch.text.toString()
@@ -225,7 +187,8 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
             database.collection("users").document("Main")
-                .collection("$nameDataSearchText Month").orderBy("order", Query.Direction.DESCENDING)
+                .collection("$nameDataSearchText Month")
+                .orderBy("order", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
@@ -243,9 +206,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
                 }
 
 
-
         }
-
 
 
     }
@@ -257,91 +218,48 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
 
 
+    fun deleteFrom() {
+
+        var from = fromEditTxt.text.toString().toInt()
+        var to = toEditTxt.text.toString().toInt()
+        var path = nameDataSearch.text.toString()
+        var docNumberId: Int = from
+        var docNumberIdString = docNumberId.toString()
+        var onSuccessCounter = 0
 
 
 
+        if (to >= from) {
+
+            while (true) {
+
+                database.collection("users").document("Main")
+                    .collection("$path Month").document(docNumberIdString).delete()
 
 
-    @SuppressLint("SuspiciousIndentation")
-    fun deleteItems() {
+                    .addOnCompleteListener {
 
-
-        var highestCounter = listOfCounters.maxOrNull()
-
-        if (highestCounter != null) {
-
-            if (highestCounter > 0) {
-
-                var numberSelector = 0
-
-                while (numberSelector < 34) {
-
-
-                    var path = nameDataSearch.text.toString()
-                    var docNumberId : Int = highestCounter
-                    var docNumberIdString = docNumberId.toString()
-
-
-
-
-
-
-                    database.collection("users").document("Main")
-                        .collection("$path Month").document(docNumberIdString).delete()
-
-
-                        .addOnCompleteListener {
-
-
-                            Log.d("!!!", "$docNumberId")
-
-
-                        }
-
-
-
-
-
-
-                    numberSelector ++
-
-
-                    if (highestCounter > 0) {
-
-                        highestCounter--
-
-
+                        onSuccessCounter++
 
                     }
 
+                from++
+                docNumberId = from
+                docNumberIdString = docNumberId.toString()
 
 
+                if (from > to) {
+                    onSuccessCounter = 0
+                    break
                 }
 
 
-                Toast.makeText(this, "Items deleted", Toast.LENGTH_SHORT).show()
-
-                val intent = Intent(this, OwnerShowRecycleview::class.java)
-                startActivity(intent)
-
             }
+        } else if (to < from) {
+            Toast.makeText(this, "from smaller number to higher only!", Toast.LENGTH_SHORT).show()
         }
 
 
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }
