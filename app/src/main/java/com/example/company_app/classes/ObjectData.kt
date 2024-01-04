@@ -1,4 +1,4 @@
-package com.example.company_app
+package com.example.company_app.classes
 
 import com.google.firebase.firestore.DocumentId
 

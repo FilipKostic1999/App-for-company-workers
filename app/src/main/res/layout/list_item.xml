@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,6 +9,8 @@
     app:cardBackgroundColor="@color/white"
     android:layout_margin="16dp">
 
+
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,11 +18,20 @@
         android:layout_marginVertical="6dp"
         android:orientation="vertical">
 
+
+
+
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:orientation="horizontal">
+
+
+
+
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -175,6 +187,22 @@
 
 
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginVertical="6dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/binImg"
+                android:src="@drawable/bin"/>
+
+
+        </LinearLayout>
+
 
 
 
@@ -185,3 +213,4 @@
 
 
 </androidx.cardview.widget.CardView>
+

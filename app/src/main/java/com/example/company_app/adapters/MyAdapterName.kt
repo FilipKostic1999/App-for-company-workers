@@ -1,11 +1,12 @@
-package com.example.company_app
+package com.example.company_app.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.text.FieldPosition
+import com.example.company_app.R
+import com.example.company_app.classes.username
 
 class MyAdapterName(private val documentsList : ArrayList<username>) : RecyclerView.Adapter<MyAdapterName.MyViewHolder>() {
 
@@ -14,7 +15,7 @@ class MyAdapterName(private val documentsList : ArrayList<username>) : RecyclerV
 
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType : Int) : MyAdapterName.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType : Int) : MyViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_itemname, parent, false)
 
         return MyViewHolder(itemView)
@@ -24,7 +25,7 @@ class MyAdapterName(private val documentsList : ArrayList<username>) : RecyclerV
 
 
 
-    override fun onBindViewHolder (holder: MyAdapterName.MyViewHolder, position: Int) {
+    override fun onBindViewHolder (holder: MyViewHolder, position: Int) {
         val document : username = documentsList[position]
         holder.name.text = document.name
     }

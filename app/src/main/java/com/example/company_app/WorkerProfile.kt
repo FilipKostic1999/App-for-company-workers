@@ -4,15 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.EditText
+import android.widget.DatePicker
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.company_app.adapters.workDayAdapter
+import com.example.company_app.classes.objectData
+import com.example.company_app.classes.username
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,16 +26,18 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import java.util.jar.Attributes.Name
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
-class WorkerProfile : AppCompatActivity() {
+class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
 
 
-    lateinit var logOut : Button
+    lateinit var saveBtn : Button
     lateinit var personC : TextView
     lateinit var personN : TextView
-    lateinit var dateWork : TextView
     lateinit var workHoursEditText : TextView
     lateinit var totalTextview : TextView
     lateinit var editNameImg : ImageView
@@ -43,6 +51,7 @@ class WorkerProfile : AppCompatActivity() {
 
     var calculator : Double = 0.0
     var counter : Int = 0
+    var dataWorker = ""
     private var touches = 0
 
 
@@ -57,7 +66,8 @@ class WorkerProfile : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var listOfDocuments : ArrayList<objectData>
-    private lateinit var myAdapter: MyAdapter
+    private lateinit var myAdapter: workDayAdapter
+    private lateinit var selectedDate: String
 
 
 
@@ -69,22 +79,11 @@ class WorkerProfile : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-
-
         listOfDocuments = arrayListOf()
-
-
-
-        myAdapter = MyAdapter(listOfDocuments)
-
-
-
+        myAdapter = workDayAdapter(listOfDocuments)
         recyclerView.adapter = myAdapter
-
+        myAdapter.setOnDeleteClickListener(this)
         listOfDocuments.clear()
-
-
-
 
 
 
@@ -99,10 +98,9 @@ class WorkerProfile : AppCompatActivity() {
 
         personC = findViewById(R.id.editTextTextPersonComment)
         personN = findViewById(R.id.nameText)
-        dateWork = findViewById(R.id.dayOfWork)
         workHoursEditText = findViewById(R.id.workHoursEditText)
         totalTextview = findViewById(R.id.totalTextView)
-        logOut = findViewById(R.id.workerLogOut)
+        saveBtn = findViewById(R.id.workerLogOut)
         editNameImg = findViewById(R.id.editNameImg)
         workerProfLogOutBtn = findViewById(R.id.workerProfLogOutBtn)
 
@@ -111,46 +109,92 @@ class WorkerProfile : AppCompatActivity() {
         totalTextview.isVisible = false
 
 
-        val sharedUserN = getSharedPreferences("userName", AppCompatActivity.MODE_PRIVATE)
-        var userName = sharedUserN.getString("userName", "")
-
-
-        personN.text = "$userName"
-        var path = userName
+        dataWorker = intent.getStringExtra("dataWorker")!!
+        var workerName = intent.getStringExtra("workerName")
+        personN.text = workerName
 
 
 
 
+        val spinner = findViewById<Spinner>(R.id.dateSpinner)
 
-        fetch()
+        // Set up dates for the spinner
+        val datesList = generateDatesList()
+
+        // Create an ArrayAdapter using a simple spinner layout and the dates
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, datesList)
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Apply the adapter to the spinner
+        spinner.adapter = adapter
+
+        // Set current date as default selected date
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        spinner.setSelection(adapter.getPosition(currentDate))
+        selectedDate = currentDate
+
+        // Set listener for spinner item selection
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parentView: AdapterView<*>,
+                selectedItemView: android.view.View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedDate = datesList[position]
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>) {
+                // Handle case where nothing is selected
+            }
+        }
 
 
 
-        editNameImg.setOnClickListener {
+
+
+
+        if (user != null) {
+            database.collection("Director view").document(dataWorker)
+                .collection("Days")
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        listOfDocuments.clear()
+                        myAdapter.notifyDataSetChanged()
+                        for (document in snapshot.documents) {
+                            objectDataItem = document.toObject()!!
+                            listOfDocuments.add(objectDataItem)
+                            myAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+        } else {
+            Toast.makeText(this, "Log are logged out due to a problem", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, WorkerSignIn::class.java)
+            startActivity(intent)
+        }
 
 
 
 
+
+
+
+            editNameImg.setOnClickListener {
             Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
-
-
         }
 
 
 
 
         workerProfLogOutBtn.setOnClickListener {
-
-            userName = ""
-
-            val editUserName = sharedUserN.edit()
-            editUserName.putString("userName", userName)
-            editUserName.commit()
-
+           // auth.signOut()
+            // Navigate to the sign-in screen
             val intent = Intent(this, WorkerSignIn::class.java)
             startActivity(intent)
-
-
+           // finish()
         }
 
 
@@ -158,20 +202,8 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-        logOut.setOnClickListener {
-
-
+        saveBtn.setOnClickListener {
              saveItem()
-
-            Toast.makeText(this, "Saving post", Toast.LENGTH_SHORT).show()
-
-            Handler().postDelayed({
-
-                                  fetch()
-
-            }, 2000)
-
-
         }
 
 
@@ -187,185 +219,53 @@ class WorkerProfile : AppCompatActivity() {
 
 
 
-
-    fun fetch() {
-
-
-        val user = auth.currentUser
-        val path = personN.text.toString()
-
-        counter = 0
-        calculator = 0.0
-        listOfDocuments.clear()
-
-        if (user != null && personN.text != null) {
-
-
-            database.collection("users").document("Main")
-                .collection("$path cronology")
-                .orderBy("order", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-
-                        objectDataItem = document.toObject()!!
-                        listOfDocuments.add(objectDataItem)
-                        counter += objectDataItem.preOrder
-                        calculator += objectDataItem.hours
-                        myAdapter.notifyDataSetChanged()
-                        Log.d("!!!", "$path")
-                        totalTextview.text = "$calculator"
-
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d("!!!", "Error getting documents: ")
-                }
-
-        }
-
-
-
-    }
 
 
 
 
     fun saveItem() {
 
-        var path = personN.text.toString()
-        var dayOfWork = dateWork.text.toString()
-        val finalHours = calculator + workHoursEditText.text.toString().toDouble()
+        var selectedDateNumbers = selectedDate.replace(Regex("[^0-9]"), "")
 
+        val workHoursInput = workHoursEditText.text.toString()
 
-        counter += 1
+        try {
+            val workHours = workHoursInput.toDouble()
 
-        var docNumberId : Int = counter
-        var docNumberIdString = docNumberId.toString()
-        var counterDouble = counter.toDouble()
-
-
-        val item = objectData(comment = personC.text.toString(), hours = workHoursEditText.text.toString().toDouble(),
-            totalHours = counterDouble, userIdentity = personN.text.toString(), order = counter, date = dayOfWork,
-            preOrder = 1)
-
-
-
-        listOfDocuments.clear()
-
-
-
-         val user = auth.currentUser
-
-        if (user != null) {
-
-            database.collection("users").document("Main")
-                .collection("$path Month").document(docNumberIdString).set(item)
-
-
-                .addOnSuccessListener {
-
-                    Toast.makeText(this, "Item correctly saved", Toast.LENGTH_SHORT).show()
+            // Continue with your code here
+            val item = objectData(
+                comment = personC.text.toString(),
+                hours = workHours,
+                totalHours = 0.0,
+                userIdentity = personN.text.toString(),
+                order = counter,
+                date = selectedDate,
+                preOrder = 1
+            )
 
 
 
-                }
+            val user = auth.currentUser
 
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        personC.text = "Add comment"
-        workHoursEditText.text = "0"
-        dateWork.text = "Date"
-
-
-        calculator = 0.0
-        counter = 0
-        counterDouble = 0.0
-
-
-
-
-
-
-
-
-
-        path = "$path cronology"
-
-
-        database.collection("users").document("Main")
-            .collection("$path").add(item)
-
-
-            .addOnCompleteListener {
-
-
-                Log.d("!!!", "item saved")
-
-
+            if (user != null) {
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(selectedDateNumbers).set(item)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Item correctly saved", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(this, "You are logged out due to a problem", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, WorkerSignIn::class.java)
+                startActivity(intent)
             }
 
 
 
-
-
-
-        if (user == null) {
-            return
+        } catch (e: NumberFormatException) {
+            // Handle the case where input is not a valid double
+            // For example, show a Toast message or set a default value
+            Toast.makeText(this, "Invalid input for work hours", Toast.LENGTH_SHORT).show()
         }
-
-
-
-
-
-
-/*
-
-update
-
-        database.collection("users").document(user.uid).collection("Itemsssss")
-            .document("hmkogjk").set(item)
-
-
-            .addOnCompleteListener {
-
-
-                Log.d("!!!", "item saved")
-
-
-            }
-
-*/
-
-       /* database.collection("users").document(user.uid).collection("ncidnvci").document("ku")
-            .update(mapOf(
-                "age" to 21,
-                "favorites.color" to "Red"
-            ))
-
-
-*/
-
-
-
-
-
-
-        item.totalHours = 0.0
 
 
 
@@ -379,6 +279,42 @@ update
     }
 
 
+    private fun generateDatesList(): List<String> {
+        val datesList = mutableListOf<String>()
+        val calendar = Calendar.getInstance()
+
+        // Add dates from current date to three months ago
+        repeat(90) {
+            datesList.add(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time))
+            calendar.add(Calendar.DAY_OF_MONTH, -1)
+        }
+
+        // Reverse the list to have the latest date first
+        return datesList.reversed()
+    }
+
+
+    override fun onDeleteClick(manifesto: objectData) {
+        var dateNumbers = manifesto.date
+            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+        val user = auth.currentUser
+
+        if (user != null) {
+            database.collection("Director view").document(dataWorker)
+                .collection("Days").document(dateNumbers).delete()
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Item not deleted, try again", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            Toast.makeText(this, "Log are logged out due to a problem", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, WorkerSignIn::class.java)
+            startActivity(intent)
+        }
+
+    }
 
 
 

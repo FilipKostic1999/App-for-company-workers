@@ -1,7 +1,6 @@
 package com.example.company_app
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -10,11 +9,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.example.company_app.adapters.MyAdapterName
+import com.example.company_app.adapters.workDayAdapter
+import com.example.company_app.classes.objectData
+import com.example.company_app.classes.username
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -47,7 +47,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var listOfDocuments2: ArrayList<objectData>
-    private lateinit var myAdapter: MyAdapter
+    private lateinit var myAdapter: workDayAdapter
 
 
     lateinit var names: username
@@ -90,7 +90,7 @@ class OwnerShowRecycleview : AppCompatActivity() {
         listOfDocuments2 = arrayListOf()
         listOfDocuments2.clear()
         deleteDayBtn.isEnabled = false
-        myAdapter = MyAdapter(listOfDocuments2)
+        myAdapter = workDayAdapter(listOfDocuments2)
         recyclerView.adapter = myAdapter
 
 
