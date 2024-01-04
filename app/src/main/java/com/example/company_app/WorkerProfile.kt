@@ -166,12 +166,15 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
                         for (document in snapshot.documents) {
                             objectDataItem = document.toObject()!!
                             listOfDocuments.add(objectDataItem)
-                            myAdapter.notifyDataSetChanged()
                         }
+
+                        // Sort the list based on the date
+                        listOfDocuments.sortByDescending { it.date }
+                        myAdapter.notifyDataSetChanged()
                     }
                 }
         } else {
-            Toast.makeText(this, "Log are logged out due to a problem", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "User is logged out due to a problem", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, WorkerSignIn::class.java)
             startActivity(intent)
         }
@@ -182,7 +185,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
 
 
 
-            editNameImg.setOnClickListener {
+        editNameImg.setOnClickListener {
             Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
         }
 
