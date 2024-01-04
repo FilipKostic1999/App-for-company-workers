@@ -64,7 +64,7 @@ class WorkerSignUp : AppCompatActivity() {
 
                                 if (userId != null) {
 
-                                    val userData = username("", name, codeID)
+                                    val userData = username(name, codeID)
 
                                     database.collection("Users")
                                         .document(user.uid).collection("user data").add(userData)

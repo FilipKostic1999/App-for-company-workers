@@ -1,65 +1,56 @@
 package com.example.company_app.adapters
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.R
+import com.example.company_app.classes.objectData
 import com.example.company_app.classes.username
 
-class MyAdapterName(private val documentsList : ArrayList<username>) : RecyclerView.Adapter<MyAdapterName.MyViewHolder>() {
+class MyAdapterName(private val nameList: ArrayList<username>) :
+    RecyclerView.Adapter<MyAdapterName.nameViewHolder>() {
 
+    private var onShowClickListener: OnShowClickListener? = null
 
-
-
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType : Int) : MyViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.list_itemname, parent, false)
-
-        return MyViewHolder(itemView)
+    interface OnShowClickListener {
+        fun onShowClick(name: username)
     }
 
-
-
-
-
-    override fun onBindViewHolder (holder: MyViewHolder, position: Int) {
-        val document : username = documentsList[position]
-        holder.name.text = document.name
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): nameViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_itemname, parent, false)
+        return nameViewHolder(view)
     }
 
-
-
-
-
-
-
-
+    override fun onBindViewHolder(holder: nameViewHolder, position: Int) {
+        val name = nameList[position]
+        holder.bind(name)
+    }
 
     override fun getItemCount(): Int {
-
-      return  documentsList.size
-
+        return nameList.size
     }
 
-
-
-
-
-
-    public class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val name : TextView = itemView.findViewById(R.id.tv_NameUser)
+    fun setOnShowClickListener(listener: OnShowClickListener) {
+        onShowClickListener = listener
     }
 
+    inner class nameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val nameWorker: TextView = itemView.findViewById(R.id.tv_NameUser)
+
+        fun bind(name: username) {
+            nameWorker.text = name.name
+
+            nameWorker.setOnClickListener {
+                onShowClickListener?.onShowClick(name)
+            }
+        }
 
 
-
-
-
-
-
-
+    }
 }
+
 

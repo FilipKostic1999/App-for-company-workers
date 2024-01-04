@@ -17,7 +17,7 @@ class workDayAdapter(private val manifestoList: ArrayList<objectData>) :
     private var onDeleteClickListener: OnDeleteClickListener? = null
 
     interface OnDeleteClickListener {
-        fun onDeleteClick(armor: objectData)
+        fun onDeleteClick(manifesto: objectData)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): workDayViewHolder {
@@ -26,8 +26,8 @@ class workDayAdapter(private val manifestoList: ArrayList<objectData>) :
     }
 
     override fun onBindViewHolder(holder: workDayViewHolder, position: Int) {
-        val armor = manifestoList[position]
-        holder.bind(armor)
+        val manifesto = manifestoList[position]
+        holder.bind(manifesto)
     }
 
     override fun getItemCount(): Int {
