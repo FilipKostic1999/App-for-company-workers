@@ -91,7 +91,12 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
     override fun onShowClick(name: username) {
-        Toast.makeText(this, name.name, Toast.LENGTH_SHORT).show()
+        val selectedName = name.name
+        val userId = name.numberID
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("selectedName", selectedName)
+        intent.putExtra("userId", userId)
+        startActivity(intent)
     }
 
 

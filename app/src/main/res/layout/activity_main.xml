@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,28 +8,140 @@
     android:background="@drawable/roof"
     tools:context=".MainActivity">
 
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemIconTint="@color/purple_700"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav">
+        android:padding="16dp">
 
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="372dp"
+            android:layout_height="324dp"
+            android:layout_marginTop="168dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/totalHoursImg"
+            app:srcCompat="@drawable/toplogo" />
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="372dp"
-        android:layout_height="324dp"
-        android:layout_marginTop="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/toplogo" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ownerRecyclerview"
+            android:layout_width="399dp"
+            android:layout_height="511dp"
+            android:layout_marginTop="112dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/calculateBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="136dp"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="#1438BD"
+            android:text="Calculate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromSpinner" />
+
+        <Spinner
+            android:id="@+id/fromSpinner"
+            android:layout_width="215dp"
+            android:layout_height="49dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toSpinner" />
+
+        <Spinner
+            android:id="@+id/toSpinner"
+            android:layout_width="215dp"
+            android:layout_height="49dp"
+            android:layout_marginTop="120dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ownerRecyclerview" />
+
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="271dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="28dp"
+            android:text="Inspect work days"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="102dp"
+            android:layout_height="73dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toEndOf="@+id/textView11"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/calendar" />
+
+        <ImageView
+            android:id="@+id/totalHoursImg"
+            android:layout_width="204dp"
+            android:layout_height="123dp"
+            android:layout_marginTop="124dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/calculateBtn"
+            app:srcCompat="@drawable/menuicon" />
+
+        <TextView
+            android:id="@+id/hoursWorkedBetweenDatesTxt"
+            android:layout_width="356dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="76dp"
+            android:text="Hours worked between 00/00/0000 and 00/00/0000:"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/calculateBtn" />
+
+        <TextView
+            android:id="@+id/totalHoursWorkedTxt"
+            android:layout_width="107dp"
+            android:layout_height="66dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="28dp"
+            android:text="0h"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="26dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/totalHoursImg"
+            app:layout_constraintTop_toTopOf="@+id/totalHoursImg" />
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="333dp"
+            android:layout_height="63dp"
+            android:layout_marginTop="36dp"
+            android:text="Calculate work hours between dates"
+            android:textColor="@color/white"
+            android:textSize="26dp"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ownerRecyclerview" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

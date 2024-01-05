@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
@@ -22,8 +23,8 @@ class WorkerSignIn : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityWorkerSignInBinding
+    lateinit var adminImg: ImageView
     private lateinit var firebaseAuth: FirebaseAuth
-    lateinit var navigationMenu : BottomNavigationView
 
 
     lateinit var database : FirebaseFirestore
@@ -38,11 +39,7 @@ class WorkerSignIn : AppCompatActivity() {
 
 
 
-
-
         var auth = FirebaseAuth.getInstance()
-
-
         database = Firebase.firestore
         val user = auth.currentUser
 
@@ -67,6 +64,12 @@ class WorkerSignIn : AppCompatActivity() {
 
         binding.createA.setOnClickListener {
             val intent = Intent(this, WorkerSignUp:: class.java)
+            startActivity(intent)
+        }
+
+
+        binding.adminImg.setOnClickListener {
+            val intent = Intent(this, Owner:: class.java)
             startActivity(intent)
         }
 
@@ -124,55 +127,6 @@ class WorkerSignIn : AppCompatActivity() {
             }
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationViewWorkerSignIn)
-
-
-
-
-        bottomNavigationView.setOnItemSelectedListener {
-
-            when (it.itemId) {
-
-
-                R.id.company -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                }
-
-                R.id.owner -> {
-                    val intent = Intent(this, Owner::class.java)
-                    startActivity(intent)
-                }
-
-
-                else -> {
-
-
-                }
-
-            }
-
-            true
-
-        }
-
-
-
-
-
-
 
 
     }

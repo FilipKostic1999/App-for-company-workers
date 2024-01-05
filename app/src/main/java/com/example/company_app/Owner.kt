@@ -21,11 +21,6 @@ class Owner : AppCompatActivity() {
         setContentView(R.layout.activity_owner)
 
 
-        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationViewOwner)
-
-
-
-
         directorPass = findViewById(R.id.directorPass)
         openb = findViewById(R.id.openB)
 
@@ -46,50 +41,14 @@ class Owner : AppCompatActivity() {
 
 
 
-
-
-
-
-        bottomNavigationView.setOnItemSelectedListener {
-
-            when(it.itemId) {
-
-
-                R.id.company -> {
-                    val   intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                }
-
-                R.id.worker -> {
-                    val   intent = Intent(this, WorkerSignIn::class.java)
-                    startActivity(intent)
-                }
-
-
-
-                else -> {
-
-
-
-                }
-
-            }
-
-            true
-
-        }
-
-
-
-
-
-
-
     }
 
+    /*
     override fun onBackPressed() {
 
     }
+
+     */
 
 
 
