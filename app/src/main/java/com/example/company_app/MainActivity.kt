@@ -1,10 +1,13 @@
 package com.example.company_app
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -29,8 +32,11 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
     lateinit var database : FirebaseFirestore
     private lateinit var recyclerView: RecyclerView
+    private lateinit var specificRecyclerview: RecyclerView
     private lateinit var listOfDocuments : ArrayList<objectData>
+    private lateinit var listOfSelectedDocuments : ArrayList<objectData>
     private lateinit var myAdapter: workDayAdapter
+    private lateinit var adapterSelectedItem: workDayAdapter
     lateinit var objectDataItem : objectData
     lateinit var hoursWorkedBetweenDatesTxt: TextView
     lateinit var totalHoursWorkedTxt: TextView
@@ -50,16 +56,46 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
 
         recyclerView = findViewById(R.id.ownerRecyclerview)
+        specificRecyclerview = findViewById(R.id.specificRecyclerview)
         hoursWorkedBetweenDatesTxt = findViewById(R.id.hoursWorkedBetweenDatesTxt)
         calculateBtn = findViewById(R.id.calculateBtn)
         totalHoursWorkedTxt = findViewById(R.id.totalHoursWorkedTxt)
+        specificRecyclerview.layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
+        specificRecyclerview.setHasFixedSize(true)
+        listOfSelectedDocuments = arrayListOf()
         listOfDocuments = arrayListOf()
         myAdapter = workDayAdapter(listOfDocuments)
+        adapterSelectedItem = workDayAdapter(listOfSelectedDocuments)
+
         recyclerView.adapter = myAdapter
+        specificRecyclerview.adapter = adapterSelectedItem
+        adapterSelectedItem.setOnDeleteClickListener(this)
         myAdapter.setOnDeleteClickListener(this)
+        listOfSelectedDocuments.clear()
         listOfDocuments.clear()
+
+
+        val myDatePicker = findViewById<DatePicker>(R.id.datePicker)
+
+        // Set a default date if needed
+        val calendar = Calendar.getInstance()
+        myDatePicker.init(
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH),
+            null
+        )
+
+        // Set the visibility of the DatePicker based on your requirements
+        myDatePicker.visibility = View.VISIBLE // Show the DatePicker initially
+
+        // Set the listener for date changes
+        myDatePicker.setOnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
+            val selectedDate = "$dayOfMonth/${monthOfYear + 1}/$year"
+            onDateSelected(selectedDate)
+        }
 
 
 
@@ -67,6 +103,8 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         val selectedName = intent.getStringExtra("selectedName")
         val userId = intent.getStringExtra("userId")
         dataWorker = "$selectedName $userId"
+
+
 
 
 
@@ -82,12 +120,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
                         }
 
                         // Sort the list based on the date
-                        listOfDocuments.sortByDescending { it.date }
+                        listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
                         myAdapter.notifyDataSetChanged()
                     }
                 }
-
-
 
 
 
@@ -187,13 +223,42 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
 
 
-
-
-
-
-
-
     }
+
+
+
+
+
+    private fun onDateSelected(selectedDate: String) {
+        // Parse selectedDate into a Date object
+        val selectedDateTime = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedDate)
+
+        // Format the Date object back to the desired string format
+        val formattedSelectedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDateTime)
+
+        val selectedObjectData = listOfDocuments.find { it.date == formattedSelectedDate }
+
+        if (selectedObjectData != null) {
+            listOfSelectedDocuments.clear()
+            adapterSelectedItem.notifyDataSetChanged()
+            listOfSelectedDocuments.add(selectedObjectData)
+            adapterSelectedItem.notifyDataSetChanged()
+        } else {
+            listOfSelectedDocuments.clear()
+            adapterSelectedItem.notifyDataSetChanged()
+            Toast.makeText(this, "No matching dates", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
+    private fun dateToMillis(dateString: String): Long {
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = format.parse(dateString)
+        return date?.time ?: 0
+    }
+
 
 
 

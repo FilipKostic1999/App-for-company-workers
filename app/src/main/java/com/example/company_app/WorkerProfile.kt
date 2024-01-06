@@ -169,7 +169,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
                         }
 
                         // Sort the list based on the date
-                        listOfDocuments.sortByDescending { it.date }
+                        listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
                         myAdapter.notifyDataSetChanged()
                     }
                 }
@@ -220,6 +220,13 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
 
     }
 
+
+
+    private fun dateToMillis(dateString: String): Long {
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = format.parse(dateString)
+        return date?.time ?: 0
+    }
 
 
 
