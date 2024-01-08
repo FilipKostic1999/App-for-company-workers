@@ -111,6 +111,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
 
         dataWorker = intent.getStringExtra("dataWorker")!!
         var workerName = intent.getStringExtra("workerName")
+        var workerId = intent.getStringExtra("workerId")
         personN.text = workerName
 
 
@@ -186,7 +187,12 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
 
 
         editNameImg.setOnClickListener {
-            Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, changeName::class.java)
+            intent.putExtra("documentPath", dataWorker)
+            intent.putExtra("workerIdNumber", workerId)
+            intent.putExtra("nameWorker", workerName)
+            startActivity(intent)
+          //  Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
         }
 
 

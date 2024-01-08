@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
     var dataWorker = ""
     var selectedFromDate = ""
     var selectedToDate = ""
+    var selectedDate = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         listOfDocuments.clear()
 
 
+
         val myDatePicker = findViewById<DatePicker>(R.id.datePicker)
 
         // Set a default date if needed
@@ -88,12 +90,23 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
             null
         )
 
+
+
+
+
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        selectedDate = dateFormat.format(calendar.time)
+
+
+
         // Set the visibility of the DatePicker based on your requirements
         myDatePicker.visibility = View.VISIBLE // Show the DatePicker initially
 
+
         // Set the listener for date changes
         myDatePicker.setOnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
-            val selectedDate = "$dayOfMonth/${monthOfYear + 1}/$year"
+            selectedDate = "$dayOfMonth/${monthOfYear + 1}/$year"
             onDateSelected(selectedDate)
         }
 
@@ -105,6 +118,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         dataWorker = "$selectedName $userId"
 
 
+        var hasSnapshotChecked = false
 
 
 
@@ -122,6 +136,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
                         // Sort the list based on the date
                         listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
                         myAdapter.notifyDataSetChanged()
+                        if (!hasSnapshotChecked) {
+                            hasSnapshotChecked = true
+                            onDateSelected(selectedDate)
+                        }
                     }
                 }
 

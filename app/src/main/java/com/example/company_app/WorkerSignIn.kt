@@ -104,6 +104,7 @@ class WorkerSignIn : AppCompatActivity() {
                                         dataWorker = "${nameInDatabase.name} ${nameInDatabase.numberID}"
                                         val workerName = nameInDatabase.name
                                         val intent = Intent(this, WorkerProfile:: class.java)
+                                        intent.putExtra("workerId", "${nameInDatabase.numberID}")
                                         intent.putExtra("dataWorker", dataWorker)
                                         intent.putExtra("workerName", workerName)
                                         startActivity(intent)

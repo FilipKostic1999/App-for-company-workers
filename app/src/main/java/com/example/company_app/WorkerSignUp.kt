@@ -67,7 +67,8 @@ class WorkerSignUp : AppCompatActivity() {
                                     val userData = username(name, codeID)
 
                                     database.collection("Users")
-                                        .document(user.uid).collection("user data").add(userData)
+                                        .document(user.uid).collection("user data")
+                                        .document("$name $codeID").set(userData)
 
                                     database.collection("Director view")
                                         .document("$name $codeID").set(userData)
