@@ -1,13 +1,16 @@
 package com.example.company_app
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
@@ -31,7 +34,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
+class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, workDayAdapter.OnEditClickListener {
 
 
 
@@ -83,6 +86,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
         myAdapter = workDayAdapter(listOfDocuments)
         recyclerView.adapter = myAdapter
         myAdapter.setOnDeleteClickListener(this)
+        myAdapter.setOnEditClickListener(this)
         listOfDocuments.clear()
 
 
@@ -331,6 +335,55 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener 
         }
 
     }
+
+
+
+    override fun onEditClick(manifesto: objectData) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
+        val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
+        val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
+        val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
+        val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
+
+        var dateNumbers = manifesto.date
+        dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+
+        val alertDialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle("Edit Document of ${manifesto.date}")
+
+        val alertDialog = alertDialogBuilder.create()
+
+        confirmButton.setOnClickListener {
+            val numberValue = numberEditText.text.toString().toDoubleOrNull()
+            val commentValue = commentEditText.text.toString()
+
+            if (numberValue != null) {
+                manifesto.hours = numberValue
+                manifesto.comment = commentValue
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(dateNumbers).set(manifesto)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                // Invalid number value, show a message
+                Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+            }
+
+            alertDialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
 
 
 

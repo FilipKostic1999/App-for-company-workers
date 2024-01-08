@@ -1,11 +1,14 @@
 package com.example.company_app.adapters
 
 import android.app.AlertDialog
+import android.content.Context
+import android.net.ConnectivityManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.R
 import com.example.company_app.classes.objectData
@@ -45,9 +48,26 @@ class MyAdapterName(private val nameList: ArrayList<username>) :
             nameWorker.text = name.name
 
             nameWorker.setOnClickListener {
-                onShowClickListener?.onShowClick(name)
+                val context = itemView.context
+                if (isNetworkConnected()) {
+                    onShowClickListener?.onShowClick(name)
+                } else {
+                    Toast.makeText(context, "No stable internet connection", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+
+
+
+
+
+        private fun isNetworkConnected(): Boolean {
+            val connectivityManager = itemView.context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+
+
 
 
     }

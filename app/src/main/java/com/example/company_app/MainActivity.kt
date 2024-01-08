@@ -1,13 +1,18 @@
 package com.example.company_app
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -27,7 +32,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
+class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, workDayAdapter.OnEditClickListener {
 
 
     lateinit var database : FirebaseFirestore
@@ -41,11 +46,16 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
     lateinit var hoursWorkedBetweenDatesTxt: TextView
     lateinit var totalHoursWorkedTxt: TextView
     lateinit var calculateBtn: Button
+    lateinit var deleteBtn: Button
 
     var dataWorker = ""
     var selectedFromDate = ""
     var selectedToDate = ""
     var selectedDate = ""
+
+
+    val handler = Handler(Looper.getMainLooper())
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +71,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         hoursWorkedBetweenDatesTxt = findViewById(R.id.hoursWorkedBetweenDatesTxt)
         calculateBtn = findViewById(R.id.calculateBtn)
         totalHoursWorkedTxt = findViewById(R.id.totalHoursWorkedTxt)
+        deleteBtn = findViewById(R.id.deleteBtn)
         specificRecyclerview.layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
@@ -74,8 +85,13 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         specificRecyclerview.adapter = adapterSelectedItem
         adapterSelectedItem.setOnDeleteClickListener(this)
         myAdapter.setOnDeleteClickListener(this)
+        myAdapter.setOnEditClickListener(this)
         listOfSelectedDocuments.clear()
         listOfDocuments.clear()
+
+
+
+
 
 
 
@@ -118,7 +134,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         dataWorker = "$selectedName $userId"
 
 
-        var hasSnapshotChecked = false
 
 
 
@@ -136,10 +151,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
                         // Sort the list based on the date
                         listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
                         myAdapter.notifyDataSetChanged()
-                        if (!hasSnapshotChecked) {
-                            hasSnapshotChecked = true
                             onDateSelected(selectedDate)
-                        }
                     }
                 }
 
@@ -240,7 +252,53 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
 
 
+        deleteBtn.setOnClickListener {
+            val fromDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
+            val toDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
 
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setTitle("Confirmation")
+            if (selectedFromDate == selectedToDate) {
+                alertDialogBuilder.setMessage("Are you sure you want to delete the document of $selectedFromDate")
+            } else {
+                alertDialogBuilder.setMessage("Are you sure you want to delete the documents between $selectedFromDate and $selectedToDate?")
+            }
+            alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+                deleteDocuments(fromDate, toDate)
+            }
+            alertDialogBuilder.setNegativeButton("No") { _, _ ->
+                // Do nothing or handle the case where the user chooses not to delete
+            }
+
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+
+
+
+    }
+
+
+
+
+
+    private fun deleteDocuments(fromDate: Date, toDate: Date) {
+        var documentsDeleted = 0
+        for (document in listOfDocuments) {
+            if (isDateWithinRange(document.date, fromDate, toDate)) {
+                val dateNumbers = document.date!!.replace(Regex("[^0-9]"), "")
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(dateNumbers).delete()
+                    .addOnSuccessListener {
+                        documentsDeleted++
+                    }
+            }
+        }
+
+        handler.postDelayed({
+            Toast.makeText(this, "$documentsDeleted documents deleted", Toast.LENGTH_SHORT).show()
+        }, 2000)
     }
 
 
@@ -264,7 +322,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
         } else {
             listOfSelectedDocuments.clear()
             adapterSelectedItem.notifyDataSetChanged()
-            Toast.makeText(this, "No matching dates", Toast.LENGTH_SHORT).show()
+           // Toast.makeText(this, "No matching dates", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -314,6 +372,61 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener {
 
 
     }
+
+
+
+
+    override fun onEditClick(manifesto: objectData) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
+        val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
+        val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
+        val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
+        val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
+
+        var dateNumbers = manifesto.date
+        dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+
+        val alertDialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle("Edit Document of ${manifesto.date}")
+
+        val alertDialog = alertDialogBuilder.create()
+
+        confirmButton.setOnClickListener {
+            val numberValue = numberEditText.text.toString().toDoubleOrNull()
+            val commentValue = commentEditText.text.toString()
+
+            if (numberValue != null) {
+                manifesto.hours = numberValue
+                manifesto.comment = commentValue
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(dateNumbers).set(manifesto)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                // Invalid number value, show a message
+                Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+            }
+
+            alertDialog.dismiss()
+        }
+
+        cancelButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
+
+
+
+
+
 
 
     private fun generateDatesList(): List<String> {
