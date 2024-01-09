@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     lateinit var totalHoursWorkedTxt: TextView
     lateinit var calculateBtn: Button
     lateinit var deleteBtn: Button
+    lateinit var deleteAllBtn: Button
 
     var dataWorker = ""
     var selectedFromDate = ""
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         calculateBtn = findViewById(R.id.calculateBtn)
         totalHoursWorkedTxt = findViewById(R.id.totalHoursWorkedTxt)
         deleteBtn = findViewById(R.id.deleteBtn)
+        deleteAllBtn = findViewById(R.id.deleteAllBtn)
         specificRecyclerview.layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
@@ -276,6 +278,26 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
+        deleteAllBtn.setOnClickListener {
+
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            alertDialogBuilder.setTitle("Confirmation")
+
+                alertDialogBuilder.setMessage("Are you sure you want to delete all documents of this user")
+
+            alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+                deleteAllDocuments()
+            }
+            alertDialogBuilder.setNegativeButton("No") { _, _ ->
+                // Do nothing or handle the case where the user chooses not to delete
+            }
+
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
+
+
+
 
     }
 
@@ -299,6 +321,27 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         handler.postDelayed({
             Toast.makeText(this, "$documentsDeleted documents deleted", Toast.LENGTH_SHORT).show()
         }, 2000)
+    }
+
+
+    fun deleteAllDocuments() {
+
+        var documentsDeleted = 0
+
+        for (document in listOfDocuments) {
+                val dateNumbers = document.date!!.replace(Regex("[^0-9]"), "")
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(dateNumbers).delete()
+                    .addOnSuccessListener {
+                        documentsDeleted++
+                    }
+        }
+
+        handler.postDelayed({
+            Toast.makeText(this, "$documentsDeleted documents deleted", Toast.LENGTH_SHORT).show()
+        }, 2000)
+
+
     }
 
 
@@ -434,7 +477,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         val calendar = Calendar.getInstance()
 
         // Add dates from current date to three months ago
-        repeat(90) {
+        repeat(400) {
             datesList.add(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time))
             calendar.add(Calendar.DAY_OF_MONTH, -1)
         }

@@ -1,6 +1,9 @@
 package com.example.company_app
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -14,6 +17,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class changeName : AppCompatActivity() {
 
@@ -29,6 +34,7 @@ class changeName : AppCompatActivity() {
 
     var workerId = ""
     var workerName = ""
+    var isAccountEnabled = true
 
 
 
@@ -74,11 +80,37 @@ class changeName : AppCompatActivity() {
 
 
 
+        if (user != null) {
+            database.collection("Director view")
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        for (document in snapshot.documents) {
+                            val file = document.toObject<username>()!!
+                            if (file.name == workerName && file.numberID == workerId && file.isAccountDisabled) {
+                                isAccountEnabled = false
+                            } else if (file.name == workerName && file.numberID == workerId && file.isAccountDisabled == false) {
+                                isAccountEnabled = true
+                            }
+                        }
+                    }
+                }
+        }
+
+
+
 
 
 
         editNameBtn.setOnClickListener {
-            editName()
+            if (isInternetAvailable()) {
+                if (isAccountEnabled) {
+                    editName()
+                } else {
+                    Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -113,7 +145,7 @@ class changeName : AppCompatActivity() {
 
 
             if (user != null) {
-                val newUserId = username(newName, workerId)
+                val newUserId = username(newName, workerId, false)
                 database.collection("Director view")
                     .document("$newName $workerId").set(newUserId)
                     .addOnSuccessListener {
@@ -190,10 +222,10 @@ class changeName : AppCompatActivity() {
     }
 
 
-
-
-
-
-
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
 
 }

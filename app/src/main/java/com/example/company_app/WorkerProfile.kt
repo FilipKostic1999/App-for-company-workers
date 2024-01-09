@@ -1,7 +1,10 @@
 package com.example.company_app
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -71,6 +74,9 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     private lateinit var listOfDocuments : ArrayList<objectData>
     private lateinit var myAdapter: workDayAdapter
     private lateinit var selectedDate: String
+
+
+    var isAccountEnabled = true
 
 
 
@@ -188,14 +194,40 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
+        if (user != null) {
+            database.collection("Director view")
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        for (document in snapshot.documents) {
+                            val file = document.toObject<username>()!!
+                            if (file.name == workerName && file.numberID == workerId && file.isAccountDisabled) {
+                                isAccountEnabled = false
+                            } else if (file.name == workerName && file.numberID == workerId && file.isAccountDisabled == false) {
+                                isAccountEnabled = true
+                            }
+                        }
+                    }
+                }
+        }
+
+
+
+
+
+
+
 
 
         editNameImg.setOnClickListener {
-            val intent = Intent(this, changeName::class.java)
-            intent.putExtra("documentPath", dataWorker)
-            intent.putExtra("workerIdNumber", workerId)
-            intent.putExtra("nameWorker", workerName)
-            startActivity(intent)
+            if (isAccountEnabled) {
+                val intent = Intent(this, changeName::class.java)
+                intent.putExtra("documentPath", dataWorker)
+                intent.putExtra("workerIdNumber", workerId)
+                intent.putExtra("nameWorker", workerName)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
+            }
           //  Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
         }
 
@@ -205,8 +237,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         workerProfLogOutBtn.setOnClickListener {
            // auth.signOut()
             // Navigate to the sign-in screen
-            val intent = Intent(this, WorkerSignIn::class.java)
-            startActivity(intent)
+                val intent = Intent(this, WorkerSignIn::class.java)
+                startActivity(intent)
            // finish()
         }
 
@@ -216,7 +248,15 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
         saveBtn.setOnClickListener {
-             saveItem()
+            if (isInternetAvailable()) {
+                if (isAccountEnabled) {
+                    saveItem()
+                } else {
+                    Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -297,6 +337,18 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     override fun onBackPressed() {
         Toast.makeText(this, "Use the logout button!", Toast.LENGTH_SHORT).show()
     }
+
+
+
+
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+
+
 
 
     private fun generateDatesList(): List<String> {

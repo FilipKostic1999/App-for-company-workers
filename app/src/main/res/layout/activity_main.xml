@@ -18,7 +18,7 @@
             android:id="@+id/imageView4"
             android:layout_width="372dp"
             android:layout_height="324dp"
-            android:layout_marginTop="124dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +53,17 @@
             android:layout_marginTop="96dp"
             android:backgroundTint="#F44336"
             android:text="Delete documents between these dates"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromSpinner" />
+
+        <Button
+            android:id="@+id/deleteAllBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="92dp"
+            android:layout_marginTop="152dp"
+            android:backgroundTint="#F44336"
+            android:text="Delete all documents"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fromSpinner" />
 
@@ -104,18 +115,19 @@
             android:id="@+id/totalHoursImg"
             android:layout_width="204dp"
             android:layout_height="123dp"
-            android:layout_marginTop="124dp"
+            android:layout_marginTop="172dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/calculateBtn"
             app:srcCompat="@drawable/menuicon" />
 
+
         <TextView
             android:id="@+id/hoursWorkedBetweenDatesTxt"
             android:layout_width="356dp"
             android:layout_height="65dp"
-            android:layout_marginTop="76dp"
+            android:layout_marginTop="128dp"
             android:text="Hours worked between 00/00/0000 and 00/00/0000:"
             android:textColor="@color/white"
             android:textSize="18dp"
@@ -130,7 +142,7 @@
             android:layout_width="107dp"
             android:layout_height="66dp"
             android:layout_marginStart="48dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="24dp"
             android:text="0h"
             android:textAlignment="center"
             android:textColor="@color/white"
@@ -138,7 +150,6 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/totalHoursImg"
             app:layout_constraintTop_toTopOf="@+id/totalHoursImg" />
-
 
         <TextView
             android:id="@+id/textView16"

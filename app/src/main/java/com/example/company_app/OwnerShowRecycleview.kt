@@ -22,7 +22,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 
-class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListener {
+class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListener, MyAdapterName.OnDeleteUserClickListener {
 
 
     lateinit var database: FirebaseFirestore
@@ -60,6 +60,7 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
         myAdapterNames = MyAdapterName(listOfNames)
         recyclerViewNames.adapter = myAdapterNames
         myAdapterNames.setOnShowClickListener(this)
+        myAdapterNames.setOnDeleteUserClickListener(this)
 
 
 
@@ -98,6 +99,33 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
         intent.putExtra("userId", userId)
         startActivity(intent)
     }
+
+
+
+    override fun onDeleteUserClick(name: username) {
+
+        var isAccountDisabled = name.isAccountDisabled
+
+        if (isAccountDisabled) {
+            name.isAccountDisabled = false
+            database.collection("Director view")
+                .document("${name.name} ${name.numberID}").set(name)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "${name.name}`s account enabled", Toast.LENGTH_SHORT).show()
+                }
+        } else if (!isAccountDisabled) {
+            name.isAccountDisabled = true
+            database.collection("Director view")
+                .document("${name.name} ${name.numberID}").set(name)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "${name.name}`s account disabled", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+
+    }
+
+
 
 
 

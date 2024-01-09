@@ -1,11 +1,17 @@
 package com.example.company_app
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -82,54 +88,60 @@ class WorkerSignIn : AppCompatActivity() {
 
         binding.workerSignInButton.setOnClickListener {
 
-
             val email = binding.workerSignUpEmailEditTexst.text.toString()
             val pass = binding.workerSignUpPasEditTexst.text.toString()
 
-
-
-
-
-
-            if (email.isNotEmpty() && pass.isNotEmpty()) {
-                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { authTask ->
-                    if (authTask.isSuccessful) {
-                        val user = firebaseAuth.currentUser
-                        if (user != null) {
-                            database.collection("Users").document(user.uid)
-                                .collection("user data")
-                                .get()
-                                .addOnSuccessListener { documents ->
-                                    for (document in documents) {
-                                        nameInDatabase = document.toObject()!!
-                                        dataWorker = "${nameInDatabase.name} ${nameInDatabase.numberID}"
-                                        val workerName = nameInDatabase.name
-                                        val intent = Intent(this, WorkerProfile::class.java)
-                                        intent.putExtra("workerId", "${nameInDatabase.numberID}")
-                                        intent.putExtra("dataWorker", dataWorker)
-                                        intent.putExtra("workerName", workerName)
-                                        startActivity(intent)
+            if (isInternetAvailable()) {
+                if (email.isNotEmpty() && pass.isNotEmpty()) {
+                    firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { authTask ->
+                        if (authTask.isSuccessful) {
+                            val user = firebaseAuth.currentUser
+                            if (user != null) {
+                                database.collection("Users").document(user.uid)
+                                    .collection("user data")
+                                    .get()
+                                    .addOnSuccessListener { documents ->
+                                        for (document in documents) {
+                                            nameInDatabase = document.toObject()!!
+                                            dataWorker = "${nameInDatabase.name} ${nameInDatabase.numberID}"
+                                            val workerName = nameInDatabase.name
+                                            val intent = Intent(this, WorkerProfile::class.java)
+                                            intent.putExtra("workerId", "${nameInDatabase.numberID}")
+                                            intent.putExtra("dataWorker", dataWorker)
+                                            intent.putExtra("workerName", workerName)
+                                            startActivity(intent)
+                                        }
                                     }
-                                }
-                                .addOnFailureListener { exception ->
-                                    Toast.makeText(this, "Log in failed", Toast.LENGTH_SHORT).show()
-                                }
+                                    .addOnFailureListener { exception ->
+                                        Toast.makeText(this, "Log in failed", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else {
+                                Toast.makeText(this, "The user is null", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            Toast.makeText(this, "The user is null", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, authTask.exception.toString(), Toast.LENGTH_SHORT).show()
+                            Log.d("!!!", authTask.exception.toString())
                         }
-                    } else {
-                        Toast.makeText(this, authTask.exception.toString(), Toast.LENGTH_SHORT).show()
-                        Log.d("!!!", authTask.exception.toString())
                     }
+                } else {
+                    Toast.makeText(this, "There are empty fields", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this, "There are empty fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
             }
-
-
         }
 
 
+
+
+    }
+
+
+    // Function to check internet connectivity
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 
@@ -175,5 +187,12 @@ class WorkerSignIn : AppCompatActivity() {
     override fun onBackPressed() {
 
     }
+
+
+
+
+
+
+
 
 }
