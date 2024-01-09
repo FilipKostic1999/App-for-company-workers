@@ -102,14 +102,17 @@ class changeName : AppCompatActivity() {
 
 
         editNameBtn.setOnClickListener {
+            editNameBtn.isEnabled = false
             if (isInternetAvailable()) {
                 if (isAccountEnabled) {
                     editName()
                 } else {
                     Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
+                    editNameBtn.isEnabled = true
                 }
             } else {
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+                editNameBtn.isEnabled = true
             }
         }
 
@@ -123,10 +126,13 @@ class changeName : AppCompatActivity() {
     }
 
 
+    /*
     override fun onBackPressed() {
 
     }
 
+
+     */
 
 
     fun editName() {

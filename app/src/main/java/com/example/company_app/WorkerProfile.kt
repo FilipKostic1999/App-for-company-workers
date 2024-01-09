@@ -367,23 +367,29 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
     override fun onDeleteClick(manifesto: objectData) {
-        var dateNumbers = manifesto.date
+        if (isAccountEnabled) {
+            var dateNumbers = manifesto.date
             dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
-        val user = auth.currentUser
+            val user = auth.currentUser
 
-        if (user != null) {
-            database.collection("Director view").document(dataWorker)
-                .collection("Days").document(dateNumbers).delete()
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Item not deleted, try again", Toast.LENGTH_SHORT).show()
-                }
+            if (user != null) {
+                database.collection("Director view").document(dataWorker)
+                    .collection("Days").document(dateNumbers).delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Item not deleted, try again", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+            } else {
+                Toast.makeText(this, "Log are logged out due to a problem", Toast.LENGTH_SHORT)
+                    .show()
+                val intent = Intent(this, WorkerSignIn::class.java)
+                startActivity(intent)
+            }
         } else {
-            Toast.makeText(this, "Log are logged out due to a problem", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, WorkerSignIn::class.java)
-            startActivity(intent)
+            Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -391,49 +397,54 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
     override fun onEditClick(manifesto: objectData) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
-        val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
-        val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
-        val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
-        val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
+        if (isAccountEnabled) {
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
+            val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
+            val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
+            val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
+            val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
 
-        var dateNumbers = manifesto.date
-        dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+            var dateNumbers = manifesto.date
+            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
 
-        val alertDialogBuilder = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setTitle("Edit Document of ${manifesto.date}")
+            val alertDialogBuilder = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle("Edit Document of ${manifesto.date}")
 
-        val alertDialog = alertDialogBuilder.create()
+            val alertDialog = alertDialogBuilder.create()
 
-        confirmButton.setOnClickListener {
-            val numberValue = numberEditText.text.toString().toDoubleOrNull()
-            val commentValue = commentEditText.text.toString()
+            confirmButton.setOnClickListener {
+                val numberValue = numberEditText.text.toString().toDoubleOrNull()
+                val commentValue = commentEditText.text.toString()
 
-            if (numberValue != null) {
-                manifesto.hours = numberValue
-                manifesto.comment = commentValue
-                database.collection("Director view").document(dataWorker)
-                    .collection("Days").document(dateNumbers).set(manifesto)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                // Invalid number value, show a message
-                Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+                if (numberValue != null) {
+                    manifesto.hours = numberValue
+                    manifesto.comment = commentValue
+                    database.collection("Director view").document(dataWorker)
+                        .collection("Days").document(dateNumbers).set(manifesto)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                } else {
+                    // Invalid number value, show a message
+                    Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+                }
+
+                alertDialog.dismiss()
             }
 
-            alertDialog.dismiss()
-        }
+            cancelButton.setOnClickListener {
+                alertDialog.dismiss()
+            }
 
-        cancelButton.setOnClickListener {
-            alertDialog.dismiss()
+            alertDialog.show()
+        } else {
+            Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
         }
-
-        alertDialog.show()
     }
 
 
