@@ -45,7 +45,7 @@ class WorkerSignUp : AppCompatActivity() {
                 val email = binding.workerSignUpEmailEditTexst.text.toString().trim()
                 val pass = binding.workerSignUpPasEditTexst.text.toString().trim()
                 val confirmPass = binding.workerSignUpPas2EditTexst.text.toString().trim()
-                val name = binding.nameEt.text.toString().trim()
+                val name = binding.nameEt.text.toString()
 
                 if (email.isNotEmpty() && pass.isNotEmpty() && confirmPass.isNotEmpty() && name.isNotEmpty()) {
                     if (pass == confirmPass) {
