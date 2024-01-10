@@ -33,6 +33,7 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
     private lateinit var listOfNames: ArrayList<username>
     private lateinit var myAdapterNames: MyAdapterName
     lateinit var name: username
+    lateinit var plusImg: ImageView
 
 
     @SuppressLint("SuspiciousIndentation")
@@ -43,6 +44,7 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
+        plusImg = findViewById(R.id.plusImg)
 
 
 
@@ -76,7 +78,15 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
                         myAdapterNames.notifyDataSetChanged()
                         for (document in snapshot.documents) {
                             name = document.toObject()!!
-                            listOfNames.add(name)
+                            if (name.isAccountDisabled == false) {
+                                listOfNames.add(name)
+                            }
+                        }
+                        for (document in snapshot.documents) {
+                            name = document.toObject()!!
+                            if (name.isAccountDisabled == true) {
+                                listOfNames.add(name)
+                            }
                         }
                         myAdapterNames.notifyDataSetChanged()
                     }
@@ -84,9 +94,20 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
+        plusImg.setOnClickListener {
+            val intent = Intent(this, WorkerSignUp::class.java)
+            startActivity(intent)
+        }
 
 
 
+
+    }
+
+
+    override fun onBackPressed() {
+        val intent = Intent(this, WorkerSignIn::class.java)
+        startActivity(intent)
     }
 
 

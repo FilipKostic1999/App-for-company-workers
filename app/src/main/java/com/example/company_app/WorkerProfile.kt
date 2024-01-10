@@ -235,7 +235,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
         workerProfLogOutBtn.setOnClickListener {
-           // auth.signOut()
+           auth.signOut()
             // Navigate to the sign-in screen
                 val intent = Intent(this, WorkerSignIn::class.java)
                 startActivity(intent)

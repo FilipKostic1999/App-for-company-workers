@@ -1,5 +1,6 @@
 package com.example.company_app
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -86,6 +87,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         recyclerView.adapter = myAdapter
         specificRecyclerview.adapter = adapterSelectedItem
         adapterSelectedItem.setOnDeleteClickListener(this)
+        adapterSelectedItem.setOnEditClickListener(this)
         myAdapter.setOnDeleteClickListener(this)
         myAdapter.setOnEditClickListener(this)
         listOfSelectedDocuments.clear()
@@ -399,6 +401,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onDeleteClick(manifesto: objectData) {
         var dateNumbers = manifesto.date
         dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
@@ -419,12 +422,15 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
+
+
     override fun onEditClick(manifesto: objectData) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
         val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
         val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
         val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
         val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
+
 
         var dateNumbers = manifesto.date
         dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
@@ -464,8 +470,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         alertDialog.show()
     }
-
-
 
 
 

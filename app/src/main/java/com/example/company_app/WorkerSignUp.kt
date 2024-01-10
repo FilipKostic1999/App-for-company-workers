@@ -35,10 +35,14 @@ class WorkerSignUp : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         database = Firebase.firestore
 
-        binding.signInTxt.setOnClickListener {
-            val intent = Intent(this, WorkerSignIn::class.java)
+
+        binding.backBtn.setOnClickListener {
+            val intent = Intent(this, OwnerShowRecycleview::class.java)
             startActivity(intent)
         }
+
+
+
 
         binding.signUpWorkerBut.setOnClickListener {
             if (isInternetAvailable()) {
@@ -80,7 +84,12 @@ class WorkerSignUp : AppCompatActivity() {
 
                                             .addOnSuccessListener {
                                                 // Document successfully written
-                                                val intent = Intent(this, WorkerSignIn::class.java)
+                                                Toast.makeText(
+                                                    this,
+                                                    "User registered",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                                val intent = Intent(this, OwnerShowRecycleview::class.java)
                                                 startActivity(intent)
 
                                             }

@@ -72,11 +72,6 @@ class WorkerSignIn : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
 
-        binding.createA.setOnClickListener {
-            val intent = Intent(this, WorkerSignUp:: class.java)
-            startActivity(intent)
-        }
-
 
         binding.adminImg.setOnClickListener {
             showPasswordDialog()
