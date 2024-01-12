@@ -94,6 +94,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         listOfDocuments.clear()
 
 
+        calculateBtn.isEnabled = false
+        deleteBtn.isEnabled = false
+        deleteAllBtn.isEnabled = false
+
 
 
 
@@ -141,23 +145,59 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
-            database.collection("Director view").document(dataWorker)
-                .collection("Days")
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
-                        listOfDocuments.clear()
-                        myAdapter.notifyDataSetChanged()
-                        for (document in snapshot.documents) {
-                            objectDataItem = document.toObject()!!
-                            listOfDocuments.add(objectDataItem)
-                        }
+        /* The enabling and disabling of the buttons in this pattern
+        in the snapshot makes sure that the user can interact
+        with the database only after all documents are
+        confirmed to have been successfully fetched and displayed
+        to make sure that the user has all the information
+        needed first, before proceeding with any kind of activity.
+        In this way we can have a massive database without
+        worrying about downloading speeds
+         */
 
-                        // Sort the list based on the date
-                        listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
-                        myAdapter.notifyDataSetChanged()
-                            onDateSelected(selectedDate)
+
+
+
+        var documentsCounter = 0 // Counter to keep track of documents
+
+        database.collection("Director view").document(dataWorker)
+            .collection("Days")
+            .addSnapshotListener { snapshot, e ->
+                if (snapshot != null) {
+                    listOfDocuments.clear()
+                    myAdapter.notifyDataSetChanged()
+                    calculateBtn.isEnabled = true
+                    deleteBtn.isEnabled = true
+                    deleteAllBtn.isEnabled = true
+
+
+                    // Reset the counter
+                    documentsCounter = 0
+
+                    for (document in snapshot.documents) {
+                        objectDataItem = document.toObject()!!
+                        listOfDocuments.add(objectDataItem)
+
+
+                        documentsCounter++
+                        calculateBtn.isEnabled = false
+                        deleteBtn.isEnabled = false
+                        deleteAllBtn.isEnabled = false
+
+                        // Check if all documents are fetched
+                        if (documentsCounter == snapshot.size()) {
+                            // Sort the list based on the date
+                            listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
+                            calculateBtn.isEnabled = true
+                            deleteBtn.isEnabled = true
+                            deleteAllBtn.isEnabled = true
+                            // Activate save button now that all documents are fetched
+                            myAdapter.notifyDataSetChanged()
+                        }
                     }
+                    onDateSelected(selectedDate)
                 }
+            }
 
 
 
@@ -251,7 +291,11 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             }
 
             totalHoursWorkedTxt.text = "$totalHoursWorked h"
-            hoursWorkedBetweenDatesTxt.text = "Hours worked between $selectedFromDate and $selectedToDate:"
+            if (selectedFromDate == selectedToDate) {
+                hoursWorkedBetweenDatesTxt.text = "Hours worked in $selectedFromDate:"
+            } else {
+                hoursWorkedBetweenDatesTxt.text = "Hours worked between $selectedFromDate and $selectedToDate:"
+            }
         }
 
 

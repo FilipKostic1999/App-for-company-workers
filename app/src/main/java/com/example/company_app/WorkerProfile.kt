@@ -45,8 +45,6 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     lateinit var personC : TextView
     lateinit var personN : TextView
     lateinit var workHoursEditText : TextView
-    lateinit var totalTextview : TextView
-    lateinit var editNameImg : ImageView
     lateinit var workerProfLogOutBtn : Button
 
 
@@ -109,14 +107,12 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         personC = findViewById(R.id.editTextTextPersonComment)
         personN = findViewById(R.id.nameText)
         workHoursEditText = findViewById(R.id.workHoursEditText)
-        totalTextview = findViewById(R.id.totalTextView)
         saveBtn = findViewById(R.id.workerLogOut)
-        editNameImg = findViewById(R.id.editNameImg)
         workerProfLogOutBtn = findViewById(R.id.workerProfLogOutBtn)
+        saveBtn.isEnabled = false
 
 
 
-        totalTextview.isVisible = false
 
 
         dataWorker = intent.getStringExtra("dataWorker")!!
@@ -166,6 +162,16 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
+        /* The enabling and disabling of saveBtn in this pattern
+        in the snapshot makes sure that the user can interact
+        with the database only after all documents are
+        confirmed to have been successfully fetched and displayed.
+        In this way we can have a massive database without
+         without worrying about downloading speeds
+         */
+
+
+        var documentsCounter = 0 // Counter to keep track of documents
 
         if (user != null) {
             database.collection("Director view").document(dataWorker)
@@ -174,14 +180,28 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                     if (snapshot != null) {
                         listOfDocuments.clear()
                         myAdapter.notifyDataSetChanged()
+                        saveBtn.isEnabled = true
+
+                        // Reset the counter
+                        documentsCounter = 0
+
                         for (document in snapshot.documents) {
                             objectDataItem = document.toObject()!!
                             listOfDocuments.add(objectDataItem)
-                        }
 
-                        // Sort the list based on the date
-                        listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
-                        myAdapter.notifyDataSetChanged()
+
+                            documentsCounter++
+                            saveBtn.isEnabled = false
+
+                            // Check if all documents are fetched
+                            if (documentsCounter == snapshot.size()) {
+                                // Sort the list based on the date
+                                listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
+                                saveBtn.isEnabled = true
+                                // Activate save button now that all documents are fetched
+                                myAdapter.notifyDataSetChanged()
+                            }
+                        }
                     }
                 }
         } else {
@@ -189,6 +209,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
             val intent = Intent(this, WorkerSignIn::class.java)
             startActivity(intent)
         }
+
 
 
 
@@ -217,23 +238,6 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
-
-        editNameImg.setOnClickListener {
-            if (isAccountEnabled) {
-                val intent = Intent(this, changeName::class.java)
-                intent.putExtra("documentPath", dataWorker)
-                intent.putExtra("workerIdNumber", workerId)
-                intent.putExtra("nameWorker", workerName)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
-            }
-          //  Toast.makeText(this, "Only administrator can edit names", Toast.LENGTH_SHORT).show()
-        }
-
-
-
-
         workerProfLogOutBtn.setOnClickListener {
            auth.signOut()
             // Navigate to the sign-in screen
@@ -246,11 +250,20 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
-
         saveBtn.setOnClickListener {
             if (isInternetAvailable()) {
                 if (isAccountEnabled) {
-                    saveItem()
+                    var allowSave = true
+                    for (document in listOfDocuments) {
+                        if (selectedDate == document.date) {
+                            allowSave = false
+                            Toast.makeText(this, "Document with same date already exists!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    if (allowSave) {
+                        saveItem()
+                    }
+
                 } else {
                     Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
                 }
@@ -367,6 +380,10 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
     override fun onDeleteClick(manifesto: objectData) {
+
+        Toast.makeText(this, "Only the company owner can delete", Toast.LENGTH_SHORT).show()
+
+        /*
         if (isAccountEnabled) {
             var dateNumbers = manifesto.date
             dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
@@ -392,11 +409,17 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
             Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
         }
 
+         */
+
     }
 
 
 
     override fun onEditClick(manifesto: objectData) {
+
+        Toast.makeText(this, "Only the company owner can edit", Toast.LENGTH_SHORT).show()
+
+        /*
         if (isAccountEnabled) {
             val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
             val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
@@ -445,6 +468,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         } else {
             Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
         }
+
+         */
     }
 
 

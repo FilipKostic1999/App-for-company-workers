@@ -12,33 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Company_app"
         tools:targetApi="31">
-        <activity
-            android:name=".changeName"
-            android:exported="false" />
-        <activity
-            android:name=".inspectDays"
-            android:exported="false" />
-        <activity
-            android:name=".workDaysInspection"
-            android:exported="false" />
-        <activity
-            android:name=".fetchNameActivity"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".createUsername"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
+
+
         <activity
             android:name=".OwnerShowRecycleview"
             android:exported="false"
@@ -48,15 +24,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".AllWorkersData"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity
             android:name=".WorkerProfile"
             android:exported="false"
@@ -75,15 +43,7 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".Owner"
-            android:exported="false"
-            android:screenOrientation="locked"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity
             android:name=".WorkerSignUp"
             android:exported="false"
