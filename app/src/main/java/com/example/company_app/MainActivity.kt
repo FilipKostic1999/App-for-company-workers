@@ -3,7 +3,10 @@ package com.example.company_app
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -278,68 +281,85 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
         calculateBtn.setOnClickListener {
-            var totalHoursWorked = 0.0
+            if (isInternetAvailable()) {
+                var totalHoursWorked = 0.0
 
-            val fromDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
-            val toDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
+                val fromDate =
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
+                val toDate =
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
 
-            for (document in listOfDocuments) {
-                // Check if the document date is within the selected date range
-                if (isDateWithinRange(document.date, fromDate, toDate)) {
-                    totalHoursWorked += document.hours
+                for (document in listOfDocuments) {
+                    // Check if the document date is within the selected date range
+                    if (isDateWithinRange(document.date, fromDate, toDate)) {
+                        totalHoursWorked += document.hours
+                    }
                 }
-            }
 
-            totalHoursWorkedTxt.text = "$totalHoursWorked h"
-            if (selectedFromDate == selectedToDate) {
-                hoursWorkedBetweenDatesTxt.text = "Hours worked in $selectedFromDate:"
+                totalHoursWorkedTxt.text = "$totalHoursWorked h"
+                if (selectedFromDate == selectedToDate) {
+                    hoursWorkedBetweenDatesTxt.text = "Hours worked in $selectedFromDate:"
+                } else {
+                    hoursWorkedBetweenDatesTxt.text =
+                        "Hours worked between $selectedFromDate and $selectedToDate:"
+                }
             } else {
-                hoursWorkedBetweenDatesTxt.text = "Hours worked between $selectedFromDate and $selectedToDate:"
+                Toast.makeText(this, "No stable internet connection", Toast.LENGTH_SHORT).show()
             }
         }
 
 
 
         deleteBtn.setOnClickListener {
-            val fromDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
-            val toDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
+            if (isInternetAvailable()) {
+                val fromDate =
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
+                val toDate =
+                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
 
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setTitle("Confirmation")
-            if (selectedFromDate == selectedToDate) {
-                alertDialogBuilder.setMessage("Are you sure you want to delete the document of $selectedFromDate")
+                val alertDialogBuilder = AlertDialog.Builder(this)
+                alertDialogBuilder.setTitle("Confirmation")
+                if (selectedFromDate == selectedToDate) {
+                    alertDialogBuilder.setMessage("Are you sure you want to delete the document of $selectedFromDate")
+                } else {
+                    alertDialogBuilder.setMessage("Are you sure you want to delete the documents between $selectedFromDate and $selectedToDate?")
+                }
+                alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+                    deleteDocuments(fromDate, toDate)
+                }
+                alertDialogBuilder.setNegativeButton("No") { _, _ ->
+                    // Do nothing or handle the case where the user chooses not to delete
+                }
+
+                val alertDialog = alertDialogBuilder.create()
+                alertDialog.show()
             } else {
-                alertDialogBuilder.setMessage("Are you sure you want to delete the documents between $selectedFromDate and $selectedToDate?")
+                Toast.makeText(this, "No stable internet connection", Toast.LENGTH_SHORT).show()
             }
-            alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
-                deleteDocuments(fromDate, toDate)
-            }
-            alertDialogBuilder.setNegativeButton("No") { _, _ ->
-                // Do nothing or handle the case where the user chooses not to delete
-            }
-
-            val alertDialog = alertDialogBuilder.create()
-            alertDialog.show()
         }
 
 
 
         deleteAllBtn.setOnClickListener {
+            if (isInternetAvailable()) {
 
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            alertDialogBuilder.setTitle("Confirmation")
+                val alertDialogBuilder = AlertDialog.Builder(this)
+                alertDialogBuilder.setTitle("Confirmation")
 
                 alertDialogBuilder.setMessage("Are you sure you want to delete all documents of this user")
 
-            alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
-                deleteAllDocuments()
-            }
-            alertDialogBuilder.setNegativeButton("No") { _, _ ->
-                // Do nothing or handle the case where the user chooses not to delete
-            }
+                alertDialogBuilder.setPositiveButton("Yes") { _, _ ->
+                    deleteAllDocuments()
+                }
+                alertDialogBuilder.setNegativeButton("No") { _, _ ->
+                    // Do nothing or handle the case where the user chooses not to delete
+                }
 
-            val alertDialog = alertDialogBuilder.create()
-            alertDialog.show()
+                val alertDialog = alertDialogBuilder.create()
+                alertDialog.show()
+            } else {
+                Toast.makeText(this, "No stable internet connection", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
@@ -534,6 +554,13 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         return datesList.reversed()
     }
 
+
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
 
 
 
