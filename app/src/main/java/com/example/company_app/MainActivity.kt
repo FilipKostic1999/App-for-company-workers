@@ -163,45 +163,47 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         var documentsCounter = 0 // Counter to keep track of documents
 
-        database.collection("Director view").document(dataWorker)
-            .collection("Days")
-            .addSnapshotListener { snapshot, e ->
-                if (snapshot != null) {
-                    listOfDocuments.clear()
-                    myAdapter.notifyDataSetChanged()
-                    calculateBtn.isEnabled = true
-                    deleteBtn.isEnabled = true
-                    deleteAllBtn.isEnabled = true
 
 
-                    // Reset the counter
-                    documentsCounter = 0
 
-                    for (document in snapshot.documents) {
-                        objectDataItem = document.toObject()!!
-                        listOfDocuments.add(objectDataItem)
+            database.collection("Director view").document(dataWorker)
+                .collection("Days")
+                .addSnapshotListener { snapshot, e ->
+                    if (snapshot != null) {
+                        listOfDocuments.clear()
+                        myAdapter.notifyDataSetChanged()
 
+                        // Reset the counter
+                        documentsCounter = 0
 
-                        documentsCounter++
-                        calculateBtn.isEnabled = false
-                        deleteBtn.isEnabled = false
-                        deleteAllBtn.isEnabled = false
-
-                        // Check if all documents are fetched
-                        if (documentsCounter == snapshot.size()) {
-                            // Sort the list based on the date
-                            listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
+                        if (snapshot.isEmpty) {
+                            // No documents in the snapshot, enable the button
                             calculateBtn.isEnabled = true
                             deleteBtn.isEnabled = true
                             deleteAllBtn.isEnabled = true
-                            // Activate save button now that all documents are fetched
-                            myAdapter.notifyDataSetChanged()
+                        } else {
+                            for (document in snapshot.documents) {
+                                objectDataItem = document.toObject()!!
+                                listOfDocuments.add(objectDataItem)
+
+                                documentsCounter++
+
+                                // Check if all documents are fetched
+                                if (documentsCounter == snapshot.size()) {
+                                    // Sort the list based on the date
+                                    listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
+
+                                    // Activate save button now that all documents are fetched
+                                    calculateBtn.isEnabled = true
+                                    deleteBtn.isEnabled = true
+                                    deleteAllBtn.isEnabled = true
+                                    myAdapter.notifyDataSetChanged()
+                                }
+                            }
+                            onDateSelected(selectedDate)
                         }
                     }
-                    onDateSelected(selectedDate)
                 }
-            }
-
 
 
 

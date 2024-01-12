@@ -180,26 +180,29 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                     if (snapshot != null) {
                         listOfDocuments.clear()
                         myAdapter.notifyDataSetChanged()
-                        saveBtn.isEnabled = true
 
                         // Reset the counter
                         documentsCounter = 0
 
-                        for (document in snapshot.documents) {
-                            objectDataItem = document.toObject()!!
-                            listOfDocuments.add(objectDataItem)
+                        if (snapshot.isEmpty) {
+                            // No documents in the snapshot, enable the button
+                            saveBtn.isEnabled = true
+                        } else {
+                            for (document in snapshot.documents) {
+                                objectDataItem = document.toObject()!!
+                                listOfDocuments.add(objectDataItem)
 
+                                documentsCounter++
 
-                            documentsCounter++
-                            saveBtn.isEnabled = false
+                                // Check if all documents are fetched
+                                if (documentsCounter == snapshot.size()) {
+                                    // Sort the list based on the date
+                                    listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
 
-                            // Check if all documents are fetched
-                            if (documentsCounter == snapshot.size()) {
-                                // Sort the list based on the date
-                                listOfDocuments.sortByDescending { it.date?.let { it1 -> dateToMillis(it1) } }
-                                saveBtn.isEnabled = true
-                                // Activate save button now that all documents are fetched
-                                myAdapter.notifyDataSetChanged()
+                                    // Activate save button now that all documents are fetched
+                                    saveBtn.isEnabled = true
+                                    myAdapter.notifyDataSetChanged()
+                                }
                             }
                         }
                     }
