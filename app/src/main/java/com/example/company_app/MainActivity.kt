@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     var selectedFromDate = ""
     var selectedToDate = ""
     var selectedDate = ""
+    var isAllDataFetched = false
 
 
     val handler = Handler(Looper.getMainLooper())
@@ -134,7 +135,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         // Set the listener for date changes
         myDatePicker.setOnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
             selectedDate = "$dayOfMonth/${monthOfYear + 1}/$year"
-            onDateSelected(selectedDate)
+            if (isAllDataFetched) {  // makes sure all data is available first before interaction
+                onDateSelected(selectedDate)
+            }
         }
 
 
@@ -172,6 +175,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                     if (snapshot != null) {
                         listOfDocuments.clear()
                         myAdapter.notifyDataSetChanged()
+                        calculateBtn.isEnabled = false
+                        deleteBtn.isEnabled = false
+                        deleteAllBtn.isEnabled = false
+                        isAllDataFetched = false
 
                         // Reset the counter
                         documentsCounter = 0
@@ -181,6 +188,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                             calculateBtn.isEnabled = true
                             deleteBtn.isEnabled = true
                             deleteAllBtn.isEnabled = true
+                            isAllDataFetched = true
                         } else {
                             for (document in snapshot.documents) {
                                 objectDataItem = document.toObject()!!
@@ -197,10 +205,11 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                                     calculateBtn.isEnabled = true
                                     deleteBtn.isEnabled = true
                                     deleteAllBtn.isEnabled = true
+                                    isAllDataFetched = true
                                     myAdapter.notifyDataSetChanged()
+                                    onDateSelected(selectedDate)
                                 }
                             }
-                            onDateSelected(selectedDate)
                         }
                     }
                 }
@@ -469,8 +478,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
     @SuppressLint("SuspiciousIndentation")
     override fun onDeleteClick(manifesto: objectData) {
-        var dateNumbers = manifesto.date
-        dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+        if (isAllDataFetched) { // makes sure all data is available first before interaction
+            var dateNumbers = manifesto.date
+            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
 
 
             database.collection("Director view").document(dataWorker)
@@ -482,7 +492,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                     Toast.makeText(this, "Item not deleted, try again", Toast.LENGTH_SHORT).show()
                 }
 
-
+        }
     }
 
 
@@ -491,50 +501,53 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
     override fun onEditClick(manifesto: objectData) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
-        val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
-        val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
-        val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
-        val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
+        if (isAllDataFetched) { // makes sure all data is available first before interaction
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_dialog_layout, null)
+            val numberEditText: EditText = dialogView.findViewById(R.id.numberEditText)
+            val commentEditText: EditText = dialogView.findViewById(R.id.commentEditText)
+            val confirmButton: Button = dialogView.findViewById(R.id.confirmButton)
+            val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
 
 
-        var dateNumbers = manifesto.date
-        dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
+            var dateNumbers = manifesto.date
+            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
 
-        val alertDialogBuilder = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setTitle("Edit Document of ${manifesto.date}")
+            val alertDialogBuilder = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setTitle("Edit Document of ${manifesto.date}")
 
-        val alertDialog = alertDialogBuilder.create()
+            val alertDialog = alertDialogBuilder.create()
 
-        confirmButton.setOnClickListener {
-            val numberValue = numberEditText.text.toString().toDoubleOrNull()
-            val commentValue = commentEditText.text.toString()
+            confirmButton.setOnClickListener {
+                val numberValue = numberEditText.text.toString().toDoubleOrNull()
+                val commentValue = commentEditText.text.toString()
 
-            if (numberValue != null) {
-                manifesto.hours = numberValue
-                manifesto.comment = commentValue
-                database.collection("Director view").document(dataWorker)
-                    .collection("Days").document(dateNumbers).set(manifesto)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                // Invalid number value, show a message
-                Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+                if (numberValue != null) {
+                    manifesto.hours = numberValue
+                    manifesto.comment = commentValue
+                    database.collection("Director view").document(dataWorker)
+                        .collection("Days").document(dateNumbers).set(manifesto)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Item not edited, try again", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                } else {
+                    // Invalid number value, show a message
+                    Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+                }
+
+                alertDialog.dismiss()
             }
 
-            alertDialog.dismiss()
-        }
+            cancelButton.setOnClickListener {
+                alertDialog.dismiss()
+            }
 
-        cancelButton.setOnClickListener {
-            alertDialog.dismiss()
+            alertDialog.show()
         }
-
-        alertDialog.show()
     }
 
 
