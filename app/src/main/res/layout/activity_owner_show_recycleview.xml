@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/imageView7"
-        android:layout_width="90dp"
-        android:layout_height="50dp"
+        android:layout_width="50dp"
+        android:layout_height="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewOwnerNames"
         android:layout_width="399dp"
-        android:layout_height="511dp"
+        android:layout_height="540dp"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
         android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:foregroundTint="#100F0F"
         android:text="Inspect work hours"
@@ -44,26 +44,26 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="207dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="270dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="5dp"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:foregroundTint="#100F0F"
         android:text="Create account for a new worker"
-        android:textAlignment="center"
+        android:textAlignment="textStart"
         android:textColor="#EEF5DB"
-        android:textSize="30dp"
+        android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/plusImg"
         app:layout_constraintTop_toBottomOf="@+id/recyclerViewOwnerNames" />
 
     <ImageView
         android:id="@+id/plusImg"
-        android:layout_width="50dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerViewOwnerNames"
         app:srcCompat="@drawable/baseline_add_circle_outline_24" />
@@ -71,8 +71,8 @@
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
