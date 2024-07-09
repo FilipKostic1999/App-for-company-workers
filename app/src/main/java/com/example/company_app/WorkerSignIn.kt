@@ -150,7 +150,7 @@ class WorkerSignIn : AppCompatActivity() {
 
         val alertDialogBuilder = AlertDialog.Builder(this)
             .setView(dialogView)
-            .setTitle("Enter Password")
+
 
         val alertDialog = alertDialogBuilder.create()
 

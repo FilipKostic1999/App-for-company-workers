@@ -21,6 +21,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.adapters.MyAdapterName
@@ -258,25 +259,29 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         val toDateSpinner = findViewById<Spinner>(R.id.toSpinner)
 
-        // Create an ArrayAdapter using a simple spinner layout and the dates
+// Create an ArrayAdapter using a simple spinner layout and the dates
         val toDateAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, datesList)
 
-        // Specify the layout to use when the list of choices appears
+// Specify the layout to use when the list of choices appears
         toDateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        // Apply the adapter to the spinner
+// Apply the adapter to the spinner
         toDateSpinner.adapter = toDateAdapter
 
-        // Set current date as default selected date
+// Set current date as default selected date
         val currentToDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
         toDateSpinner.setSelection(toDateAdapter.getPosition(currentToDate))
         selectedToDate = currentToDate
 
-        // Set listener for spinner item selection
+// Apply custom background for the spinner when pressed
+        val customBackgroundDrawable = ContextCompat.getDrawable(this, R.drawable.spinner_background)
+        toDateSpinner.background = customBackgroundDrawable
+
+// Set listener for spinner item selection
         toDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parentView: AdapterView<*>,
-                selectedItemView: android.view.View?,
+                selectedItemView: View?,
                 position: Int,
                 id: Long
             ) {
@@ -287,6 +292,8 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                 // Handle case where nothing is selected
             }
         }
+
+
 
 
 
