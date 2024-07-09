@@ -274,17 +274,12 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         selectedToDate = currentToDate
 
 // Apply custom background for the spinner when pressed
-        val customBackgroundDrawable = ContextCompat.getDrawable(this, R.drawable.spinner_background)
+        val customBackgroundDrawable = ContextCompat.getDrawable(this, R.drawable.item_background)
         toDateSpinner.background = customBackgroundDrawable
 
 // Set listener for spinner item selection
         toDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parentView: AdapterView<*>,
-                selectedItemView: View?,
-                position: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: android.view.View?, position: Int, id: Long) {
                 selectedToDate = datesList[position]
             }
 
@@ -292,7 +287,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                 // Handle case where nothing is selected
             }
         }
-
 
 
 

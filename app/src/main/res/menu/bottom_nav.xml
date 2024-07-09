@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Company"
+    <item
         android:id="@+id/company"
-        android:icon="@drawable/ic_baseline_collections_bookmark_24"/>
-    <item android:title="Owner"
+        android:icon="@drawable/baseline_business_24"
+        android:title="Company" />
+    <item
         android:id="@+id/owner"
-        android:icon="@drawable/ic_baseline_laptop_chromebook_24" />
-    <item android:title="Worker"
+        android:icon="@drawable/baseline_laptop_chromebook_24"
+        android:title="Owner" />
+    <item
         android:id="@+id/worker"
-        android:icon="@drawable/ic_baseline_people_24"/>
+        android:icon="@drawable/baseline_people_244"
+        android:title="Worker" />
 </menu>

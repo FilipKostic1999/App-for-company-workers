@@ -21,8 +21,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewOwnerNames"
         android:layout_width="399dp"
-        android:layout_height="540dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="610dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView7" />
@@ -44,9 +44,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="270dp"
         android:layout_height="30dp"
         android:layout_marginStart="5dp"
+        android:layout_marginBottom="1dp"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:foregroundTint="#100F0F"
         android:text="Create account for a new worker"
@@ -63,6 +65,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="60dp"
+        android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerViewOwnerNames"
