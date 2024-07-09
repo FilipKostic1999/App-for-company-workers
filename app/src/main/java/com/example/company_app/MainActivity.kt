@@ -515,7 +515,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
             val alertDialogBuilder = AlertDialog.Builder(this)
                 .setView(dialogView)
-                .setTitle("Edit Document of ${manifesto.date}")
+
 
             val alertDialog = alertDialogBuilder.create()
 
