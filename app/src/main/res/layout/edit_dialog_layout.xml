@@ -1,42 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_margin="16dp"
+    app:cardBackgroundColor="#B8D8D8"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
-    <EditText
-        android:id="@+id/numberEditText"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Hours of work"
-        android:inputType="numberDecimal"/>
+        android:padding="16dp">
 
-    <EditText
-        android:id="@+id/commentEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Comment"/>
+        <EditText
+            android:id="@+id/numberEditText"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edittext_background"
+            android:fontFamily="@font/cormorant_garamond_bold"
+            android:gravity="center|left"
+            android:hint="Hours of work"
+            android:inputType="numberDecimal"
+            android:paddingStart="20dp"
+            android:textColor="#4F6367"
+            android:textColorHint="#4F6367"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edittext_background"
+            android:fontFamily="@font/cormorant_garamond_bold"
+            android:gravity="center|left"
+            android:hint="Comment"
+            android:paddingStart="20dp"
+            android:textColor="#4F6367"
+            android:textColorHint="#4F6367"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/numberEditText" />
 
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Confirm"/>
+            android:layout_height="45dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#4F6367"
+            android:fontFamily="@font/cormorant_garamond_bold"
+            android:text="Confirm"
+            android:textColor="#EEF5DB"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/cancelButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/commentEditText" />
 
         <Button
             android:id="@+id/cancelButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cancel"/>
-    </LinearLayout>
+            android:layout_height="45dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#4F6367"
+            android:fontFamily="@font/cormorant_garamond_bold"
+            android:text="Cancel"
+            android:textColor="#EEF5DB"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/confirmButton"
+            app:layout_constraintTop_toBottomOf="@id/commentEditText" />
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

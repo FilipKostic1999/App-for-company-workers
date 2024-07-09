@@ -4,115 +4,171 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/roof"
+    android:background="#4F6367"
     tools:context=".WorkerProfile">
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="57dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="170dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/cormorant_garamond_bold"
+        android:text="Today's work history"
+        android:textColor="#EEF5DB"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:text="Today's work h"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.124"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/workerLogOut"
-        android:layout_width="93dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="196dp"
-        android:backgroundTint="#4CAF50"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button_background"
+        android:fontFamily="@font/cormorant_garamond_bold"
         android:text="save"
+        android:textColor="#4F6367"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.951"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/dateSpinner" />
 
     <EditText
         android:id="@+id/editTextTextPersonComment"
-        android:layout_width="213dp"
-        android:layout_height="86dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background=""
+        android:backgroundTint="#00FFFFFF"
         android:ems="10"
+        android:fontFamily="@font/cormorant_garamond_bold"
         android:inputType="textPersonName"
         android:text="Add comment"
+        android:textColor="#EEF5DB"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.888"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/workHoursEditText"
-        android:layout_width="60dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="64dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView4"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="#B8D8D8"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toEndOf="@+id/textView18"
+        app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/workHoursEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:background="@null"
+                android:ems="10"
+                android:fontFamily="@font/cormorant_garamond_bold"
+                android:gravity="center"
+                android:inputType="textPersonName"
+                android:text="0"
+                android:textColor="#4F6367"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Set background to null to prevent overriding CardView's background -->
+
+    </androidx.cardview.widget.CardView>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="399dp"
-        android:layout_height="411dp"
-        android:layout_marginTop="304dp"
+        android:layout_height="465dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/workerProfLogOutBtn" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
-        android:textStyle="bold"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/cormorant_garamond_bold"
         android:text="Welcome back"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.128"
+        android:textColor="#EEF5DB"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView4" />
 
     <TextView
         android:id="@+id/nameText"
-        android:layout_width="97dp"
-        android:layout_height="54dp"
-        android:layout_marginTop="164dp"
-        android:textSize="16dp"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/cormorant_garamond_bold"
+        android:textColor="#EEF5DB"
+        android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.13"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
         android:id="@+id/workerProfLogOutBtn"
-        android:layout_width="93dp"
+        android:layout_width="150dp"
         android:layout_height="41dp"
-        android:layout_marginTop="260dp"
-        android:backgroundTint="@color/design_default_color_error"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button_background2"
+        android:fontFamily="@font/cormorant_garamond_bold"
         android:text="Logout"
+        android:textColor="#EEF5DB"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/workerLogOut" />
 
 
     <Spinner
         android:id="@+id/dateSpinner"
         android:layout_width="215dp"
-        android:layout_height="49dp"
+        android:layout_height="40dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/item_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.897"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonComment" />
+
+    <TextView
+        android:id="@+id/textView18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/cormorant_garamond_bold"
+        android:text="h:"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

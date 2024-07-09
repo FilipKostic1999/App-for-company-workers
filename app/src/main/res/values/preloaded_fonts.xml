@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/cormorant_garamond</item>
+        <item>@font/cormorant_garamond_bold_italic</item>
+        <item>@font/cormorant_garamond_italic</item>
+        <item>@font/cormorant_garamond_light</item>
+        <item>@font/cormorant_garamond_medium</item>
+        <item>@font/cormorant_garamond_semibold_italic</item>
+    </array>
+</resources>
