@@ -196,6 +196,7 @@
                     android:inputType="textPassword"
                     android:paddingStart="20dp"
                     android:textColor="#4F6367"
+                    android:textColorHint="#4F6367"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
