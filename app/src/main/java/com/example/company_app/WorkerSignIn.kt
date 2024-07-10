@@ -1,5 +1,6 @@
 package com.example.company_app
 
+import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -7,15 +8,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import android.view.animation.ScaleAnimation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,14 +40,28 @@ class WorkerSignIn : AppCompatActivity() {
     private lateinit var binding: ActivityWorkerSignInBinding
     lateinit var adminImg: ImageView
     private lateinit var firebaseAuth: FirebaseAuth
-
+    private lateinit var plåtImg: ImageView
 
     lateinit var database : FirebaseFirestore
     lateinit var nameInDatabase : username
     var dataWorker = ""
 
 
+    private lateinit var cardViewShake: CardView
+    private val handler = Handler()
 
+    private val shakeRunnable = object : Runnable {
+        override fun run() {
+            // Load shake animation
+            val shakeAnimation = AnimationUtils.loadAnimation(this@WorkerSignIn, R.anim.shake)
+
+            // Start animation on the cardViewShake
+            cardViewShake.startAnimation(shakeAnimation)
+
+            // Schedule the next shake after 3 seconds (3000 milliseconds)
+            handler.postDelayed(this, 4000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +71,6 @@ class WorkerSignIn : AppCompatActivity() {
         var auth = FirebaseAuth.getInstance()
         database = Firebase.firestore
         val user = auth.currentUser
-
-
 
 
 
@@ -126,10 +143,30 @@ class WorkerSignIn : AppCompatActivity() {
             }
         }
 
+        plåtImg = findViewById(R.id.plåtImg)
+
+        // Load the animation from XML
+        val animation = AnimationUtils.loadAnimation(this, R.anim.circular_path_animation)
+
+        // Apply the animation to the ImageView
+        plåtImg.startAnimation(animation)
 
 
+        // Initialize cardViewShake after setContentView
+        cardViewShake = findViewById(R.id.cardViewShake)
 
+        // Start the initial shake animation
+        handler.post(shakeRunnable)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Remove any pending callbacks to prevent memory leaks
+        handler.removeCallbacks(shakeRunnable)
+    }
+
+
+
 
 
     // Function to check internet connectivity

@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#B8D8D8"
+        android:background="#4F6367"
         tools:context=".WorkerSignUp">
 
         <ImageView
@@ -23,7 +23,7 @@
             app:srcCompat="@drawable/rounded_top_corners" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/plåtImg2"
             android:layout_width="300dp"
             android:layout_height="100dp"
             android:layout_marginTop="20dp"

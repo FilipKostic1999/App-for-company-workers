@@ -1,10 +1,8 @@
 package com.example.company_app
 
-import android.annotation.SuppressLint
+
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
@@ -12,22 +10,26 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.company_app.adapters.MyAdapterName
 import com.example.company_app.adapters.workDayAdapter
 import com.example.company_app.classes.objectData
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -63,7 +65,11 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
     val handler = Handler(Looper.getMainLooper())
 
+    private lateinit var nestedScrollView2: NestedScrollView
+    private lateinit var nestedScrollView6: NestedScrollView
+    private lateinit var arrowImageView: ImageView
 
+    private lateinit var cardView8: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +77,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         database = Firebase.firestore
 
+        nestedScrollView2 = findViewById(R.id.nestedScrollView2)
+        nestedScrollView6 = findViewById(R.id.nestedScrollView6)
+        arrowImageView = findViewById(R.id.arrowImageView)
+        cardView8 = findViewById(R.id.cardView8)
 
 
         recyclerView = findViewById(R.id.ownerRecyclerview)
@@ -104,11 +114,55 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         deleteAllBtn.isEnabled = false
 
 
+        val cardView8: CardView = findViewById(R.id.cardView8)
+
+        val upDownAnimation: Animation = AnimationUtils.loadAnimation(this, R.anim.up_down)
+
+        cardView8.startAnimation(upDownAnimation)
+        // Locate the arrowImageView from the layout
+        val arrowImageView = findViewById<ImageView>(R.id.arrowImageView)
+
+
+        // Setup RecyclerViews
+        setupRecyclerViews()
+
+        // Set click listener for arrowImageView
+        arrowImageView.setOnClickListener {
+            toggleNestedScrollViews(it)
+        }
+
+    }
+
+    private fun setupRecyclerViews() {
+        // Implementation for setting up RecyclerViews
+    }
+
+    private fun toggleNestedScrollViews(view: View) {
+        if (nestedScrollView2.visibility == View.VISIBLE) {
+            // Collapse NestedScrollViews
+            nestedScrollView2.visibility = View.GONE
+            nestedScrollView6.visibility = View.GONE
+            arrowImageView.setImageResource(R.drawable.sharp_arrow_drop_up_24)
+        } else {
+            // Expand NestedScrollViews
+            nestedScrollView2.visibility = View.VISIBLE
+            nestedScrollView6.visibility = View.VISIBLE
+            arrowImageView.setImageResource(R.drawable.baseline_arrow_drop_down_24)
+
+            // Scroll nestedScrollView2 to top
+            nestedScrollView2.post {
+                nestedScrollView2.smoothScrollTo(0, 0)
+            }
+
+            // Scroll nestedScrollView6 to top
+            nestedScrollView6.post {
+                nestedScrollView6.smoothScrollTo(0, 0)
+            }
+        }
 
 
 
-
-        val myDatePicker = findViewById<DatePicker>(R.id.datePicker)
+    val myDatePicker = findViewById<DatePicker>(R.id.datePicker)
 
         // Set a default date if needed
         val calendar = Calendar.getInstance()
@@ -477,7 +531,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
-    @SuppressLint("SuspiciousIndentation")
+
     override fun onDeleteClick(manifesto: objectData) {
         if (isAllDataFetched) { // makes sure all data is available first before interaction
             var dateNumbers = manifesto.date

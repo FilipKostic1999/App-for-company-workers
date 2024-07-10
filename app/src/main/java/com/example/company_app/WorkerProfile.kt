@@ -7,8 +7,11 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -19,6 +22,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -72,7 +76,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     private lateinit var listOfDocuments : ArrayList<objectData>
     private lateinit var myAdapter: workDayAdapter
     private lateinit var selectedDate: String
-
+    private lateinit var cardViewPuls: CardView
 
     var isAccountEnabled = true
 
@@ -112,7 +116,13 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         saveBtn.isEnabled = false
 
 
+        cardViewPuls = findViewById(R.id.cardViewPuls)
 
+        // Ladda animationen från XML
+        val animation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+
+        // Applicera animationen på CardView
+        cardViewPuls.startAnimation(animation)
 
 
         dataWorker = intent.getStringExtra("dataWorker")!!
@@ -120,8 +130,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         var workerId = intent.getStringExtra("workerId")
         personN.text = workerName
 
-
-
+        val editTextTextPersonComment = findViewById<EditText>(R.id.editTextTextPersonComment)
+        val workHoursEditText = findViewById<EditText>(R.id.workHoursEditText)
 
         val spinner = findViewById<Spinner>(R.id.dateSpinner)
 
@@ -238,9 +248,56 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
+        editTextTextPersonComment.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Do nothing
+            }
 
+            override fun afterTextChanged(s: Editable?) {
+                // Check if the number of lines exceeds 20
+                val lineCount = editTextTextPersonComment.lineCount
+                if (lineCount > 20) {
+                    Toast.makeText(applicationContext, "Maximum 20 lines reached", Toast.LENGTH_SHORT).show()
 
+                    // Trim the text to fit within 20 lines
+                    val selectionStart = editTextTextPersonComment.selectionStart
+                    val selectionEnd = editTextTextPersonComment.selectionEnd
+                    editTextTextPersonComment.setText(s?.toString()?.substring(0, editTextTextPersonComment.layout.getLineEnd(19)))
+                    editTextTextPersonComment.setSelection(Math.min(selectionStart, editTextTextPersonComment.text.length))
+                    editTextTextPersonComment.setSelection(Math.min(selectionEnd, editTextTextPersonComment.text.length))
+                }
+            }
+        })
+
+        // Set a TextWatcher to limit input to a maximum of 24 hours and disallow zero
+        workHoursEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // Do nothing
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // Do nothing
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                val input = s.toString()
+                if (input.isNotEmpty()) {
+                    val hours = input.toInt()
+                    if (hours == 0) {
+                        workHoursEditText.setText("")
+
+                    } else if (hours > 24) {
+                        Toast.makeText(this@WorkerProfile, "Please enter a value between 1 and 24", Toast.LENGTH_SHORT).show()
+                        workHoursEditText.setText("0")
+                        workHoursEditText.setSelection(workHoursEditText.text.length)
+                    }
+                }
+            }
+        })
 
         workerProfLogOutBtn.setOnClickListener {
            auth.signOut()
@@ -401,7 +458,5 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
-
-
-
 }
+

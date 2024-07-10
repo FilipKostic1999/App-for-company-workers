@@ -7,7 +7,9 @@ import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.AnimationUtils
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignUpBinding
@@ -25,7 +27,7 @@ class WorkerSignUp : AppCompatActivity() {
     private lateinit var binding: ActivityWorkerSignUpBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
-
+    private lateinit var plåtImg: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,6 +43,13 @@ class WorkerSignUp : AppCompatActivity() {
             startActivity(intent)
         }
 
+        plåtImg = findViewById(R.id.plåtImg2)
+
+        // Load the animation from XML
+        val animation = AnimationUtils.loadAnimation(this, R.anim.circular_path_animation)
+
+        // Apply the animation to the ImageView
+        plåtImg.startAnimation(animation)
 
 
 
