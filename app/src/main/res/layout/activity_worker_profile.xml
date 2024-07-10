@@ -4,70 +4,75 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:background="#4F6367"
     tools:context=".WorkerProfile">
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="170dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="30dp"
+        android:layout_width="205dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:text="Today's work history"
         android:textColor="#EEF5DB"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/dateSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/nameText" />
 
     <Button
         android:id="@+id/workerLogOut"
-        android:layout_width="150dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="106dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="90dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/button_background"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:text="save"
         android:textColor="#4F6367"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/workerProfLogOutBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView4"
-        app:layout_constraintTop_toBottomOf="@+id/dateSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/cardViewPuls" />
 
     <EditText
         android:id="@+id/editTextTextPersonComment"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="11dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="20dp"
-
-        android:backgroundTint="#00FFFFFF"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="21dp"
+        android:background="@drawable/item_background"
         android:ems="10"
         android:fontFamily="@font/cormorant_garamond_bold"
-        android:inputType="textPersonName"
-        android:text="Add comment"
+        android:gravity="start|top"
+        android:hint="Add comment"
+        android:inputType="textMultiLine"
+        android:maxLines="20"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
         android:textColor="#EEF5DB"
+        android:textColorHint="#EEF5DB"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/cardViewPuls"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dateSpinner" />
+
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView4"
+        android:id="@+id/cardViewPuls"
         android:layout_width="100dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"
         app:cardBackgroundColor="#B8D8D8"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
-        app:layout_constraintStart_toEndOf="@+id/textView18"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -76,20 +81,33 @@
 
             <EditText
                 android:id="@+id/workHoursEditText"
-                android:layout_width="match_parent"
+                android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:layout_margin="4dp"
                 android:background="@null"
                 android:ems="10"
                 android:fontFamily="@font/cormorant_garamond_bold"
-                android:gravity="center"
-                android:inputType="textPersonName"
-                android:text="0"
+                android:gravity="start"
+                android:hint="0"
+                android:inputType="number"
                 android:textColor="#4F6367"
+                android:textColorHint="#4F6367"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/textView18"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="h:"
+                android:textColor="#4F6367"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -100,83 +118,67 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="399dp"
-        android:layout_height="480dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="340dp"
+        android:layout_height="450dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/workerProfLogOutBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonComment" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/cormorant_garamond_bold"
-        android:text="Welcome back"
+        android:text="Welcome back:"
         android:textColor="#EEF5DB"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView4" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/nameText"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_width="250dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="15dp"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:textColor="#EEF5DB"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/workerProfLogOutBtn"
-        android:layout_width="150dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="21dp"
+        android:layout_width="90dp"
+        android:layout_height="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/button_background2"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:text="Logout"
         android:textColor="#EEF5DB"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nameText"
         app:layout_constraintTop_toBottomOf="@+id/workerLogOut" />
 
 
     <Spinner
         android:id="@+id/dateSpinner"
-        android:layout_width="215dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="31dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/item_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cardView4"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonComment" />
-
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="35dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="15dp"
-        android:fontFamily="@font/cormorant_garamond_bold"
-        android:text="h:"
-        android:textSize="20sp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/item_background"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

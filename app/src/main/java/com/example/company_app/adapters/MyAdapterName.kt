@@ -1,9 +1,7 @@
 package com.example.company_app.adapters
 
-import android.app.AlertDialog
 import android.content.Context
 import android.net.ConnectivityManager
-import android.provider.ContactsContract.CommonDataKinds.Im
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
