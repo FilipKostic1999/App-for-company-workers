@@ -249,29 +249,42 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
         editTextTextPersonComment.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Do nothing
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Do nothing
-            }
+            private var toast: Toast? = null
 
             override fun afterTextChanged(s: Editable?) {
                 // Check if the number of lines exceeds 20
                 val lineCount = editTextTextPersonComment.lineCount
                 if (lineCount > 20) {
-                    Toast.makeText(applicationContext, "Maximum 20 lines reached", Toast.LENGTH_SHORT).show()
+                    // Show a single toast message
+                    if (toast == null || toast?.view?.isShown != true) {
+                        toast?.cancel() // Cancel any previous toast
+                        toast = Toast.makeText(applicationContext, "Maximum 20 lines reached", Toast.LENGTH_SHORT)
+                        toast?.show()
+                    }
 
                     // Trim the text to fit within 20 lines
-                    val selectionStart = editTextTextPersonComment.selectionStart
-                    val selectionEnd = editTextTextPersonComment.selectionEnd
-                    editTextTextPersonComment.setText(s?.toString()?.substring(0, editTextTextPersonComment.layout.getLineEnd(19)))
-                    editTextTextPersonComment.setSelection(Math.min(selectionStart, editTextTextPersonComment.text.length))
-                    editTextTextPersonComment.setSelection(Math.min(selectionEnd, editTextTextPersonComment.text.length))
+                    val maxLines = 20
+                    val layout = editTextTextPersonComment.layout
+                    val trimIndex = layout.getLineEnd(maxLines - 1)
+                    val trimmedText = s?.toString()?.substring(0, trimIndex)
+
+                    // Update text without triggering afterTextChanged again
+                    editTextTextPersonComment.removeTextChangedListener(this)
+                    editTextTextPersonComment.setText(trimmedText)
+                    editTextTextPersonComment.setSelection(trimmedText?.length ?: 0)
+                    editTextTextPersonComment.addTextChangedListener(this)
                 }
             }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // No action needed
+            }
         })
+
 
         // Set a TextWatcher to limit input to a maximum of 24 hours and disallow zero
         workHoursEditText.addTextChangedListener(object : TextWatcher {
