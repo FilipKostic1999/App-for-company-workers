@@ -9,6 +9,8 @@ import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,6 +52,11 @@ class WorkerSignIn : AppCompatActivity() {
     private lateinit var cardViewShake: CardView
     private val handler = Handler()
 
+
+    private lateinit var workerSignUpPasEditTexst: EditText
+    private lateinit var eyeImg: ImageView
+    private var isPasswordVisible: Boolean = false
+
     private val shakeRunnable = object : Runnable {
         override fun run() {
             // Load shake animation
@@ -89,12 +96,21 @@ class WorkerSignIn : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
 
+        eyeImg = findViewById(R.id.eyeImg)
 
         binding.adminImg.setOnClickListener {
             showPasswordDialog()
         }
 
+        // Set initial drawable
+        eyeImg.setImageResource(R.drawable.baseline_remove_red_eye_24)
+        // Initialize views
+        workerSignUpPasEditTexst = findViewById(R.id.workerSignUpPasEditTexst)
 
+        // Set click listener for eyeImageView
+        eyeImg.setOnClickListener {
+            togglePasswordVisibility()
+        }
 
 
 
@@ -222,9 +238,21 @@ class WorkerSignIn : AppCompatActivity() {
 
 
 
+    private fun togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Hide the password
+            workerSignUpPasEditTexst.transformationMethod = PasswordTransformationMethod.getInstance()
+            eyeImg.setImageResource(R.drawable.baseline_remove_red_eye_24)
+        } else {
+            // Show the password
+            workerSignUpPasEditTexst.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            eyeImg.setImageResource(R.drawable.outline_remove_red_eye_24)
+        }
+        // Toggle the flag
+        isPasswordVisible = !isPasswordVisible
 
-
-
-
-
+        // Move the cursor to the end of the text
+        workerSignUpPasEditTexst.setSelection(workerSignUpPasEditTexst.text.length)
+    }
 }
+
