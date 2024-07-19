@@ -6,6 +6,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.animation.AnimationUtils
 import android.widget.EditText
@@ -28,6 +30,15 @@ class WorkerSignUp : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
     private lateinit var plåtImg: ImageView
+
+    private lateinit var workerSignUpPasEditTexst: EditText
+    private lateinit var eyeImg2: ImageView
+
+
+    private lateinit var workerSignUpPas2EditTexst: EditText
+    private lateinit var eyeImg3: ImageView
+    private var isPasswordVisible: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +61,26 @@ class WorkerSignUp : AppCompatActivity() {
 
         // Apply the animation to the ImageView
         plåtImg.startAnimation(animation)
+
+        // Initialize views
+
+        eyeImg2 = findViewById(R.id.eyeImg2)
+        workerSignUpPas2EditTexst = findViewById(R.id.workerSignUpPas2EditTexst)
+        eyeImg3 = findViewById(R.id.eyeImg3)
+        workerSignUpPasEditTexst = findViewById(R.id.workerSignUpPasEditTexst)
+
+        // Set initial drawable
+        eyeImg2.setImageResource(R.drawable.baseline_remove_red_eye_24)
+        eyeImg3.setImageResource(R.drawable.baseline_remove_red_eye_24)
+
+        // Set click listener for eyeImageView
+        eyeImg3.setOnClickListener {
+            togglePasswordVisibility()
+        }
+        // Set click listener for eyeImageView
+        eyeImg2.setOnClickListener {
+            togglePasswordVisibility2()
+        }
 
 
 
@@ -142,7 +173,40 @@ class WorkerSignUp : AppCompatActivity() {
     }
 
 
+    private fun togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Hide the password
+            workerSignUpPasEditTexst.transformationMethod = PasswordTransformationMethod.getInstance()
+            eyeImg3.setImageResource(R.drawable.baseline_remove_red_eye_24)
+        } else {
+            // Show the password
+            workerSignUpPasEditTexst.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            eyeImg3.setImageResource(R.drawable.outline_remove_red_eye_24)
+        }
+        // Toggle the flag
+        isPasswordVisible = !isPasswordVisible
+
+        // Move the cursor to the end of the text
+        workerSignUpPasEditTexst.setSelection(workerSignUpPasEditTexst.text.length)
+
+    }
 
 
 
+    private fun togglePasswordVisibility2() {
+        if (isPasswordVisible) {
+            // Hide the password
+            workerSignUpPas2EditTexst.transformationMethod = PasswordTransformationMethod.getInstance()
+            eyeImg2.setImageResource(R.drawable.baseline_remove_red_eye_24)
+        } else {
+            // Show the password
+            workerSignUpPas2EditTexst.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            eyeImg2.setImageResource(R.drawable.outline_remove_red_eye_24)
+        }
+        // Toggle the flag
+        isPasswordVisible = !isPasswordVisible
+
+        // Move the cursor to the end of the text
+        workerSignUpPas2EditTexst.setSelection(workerSignUpPas2EditTexst.text.length)
+    }
 }

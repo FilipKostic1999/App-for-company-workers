@@ -11,7 +11,9 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
+import android.view.animation.Transformation
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -51,10 +53,24 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     private lateinit var adapterSelectedItem: workDayAdapter
     lateinit var objectDataItem : objectData
     lateinit var hoursWorkedBetweenDatesTxt: TextView
+    lateinit var historyTxt: TextView
+    lateinit var selectedTxt: TextView
     lateinit var totalHoursWorkedTxt: TextView
     lateinit var calculateBtn: Button
     lateinit var deleteBtn: Button
     lateinit var deleteAllBtn: Button
+
+    private lateinit var pressToSelectTxt: TextView
+    private lateinit var fadeInAnimation: Animation
+    private lateinit var fadeOutAnimation: Animation
+    private lateinit var fadeInOutAnimationSet: AnimationSet
+    private var isTextVisible = true
+
+    private lateinit var scaleOpenAnimation: Animation
+    private lateinit var translateUpAnimation: Animation
+    private lateinit var animationSet: AnimationSet
+    private lateinit var arrowDownImg: ImageView
+
 
     var dataWorker = ""
     var selectedFromDate = ""
@@ -63,7 +79,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     var isAllDataFetched = false
 
 
-    val handler = Handler(Looper.getMainLooper())
 
     private lateinit var nestedScrollView2: NestedScrollView
     private lateinit var nestedScrollView6: NestedScrollView
@@ -71,16 +86,38 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
     private lateinit var cardView8: CardView
 
+    private lateinit var cardViewAnim: CardView
+
+    private lateinit var fadeScaleInAnimation: Animation
+    private lateinit var fadeScaleOutAnimation: Animation
+
+    private val handler = Handler()
+    private val animationRunnable = object : Runnable {
+        override fun run() {
+            if (isTextVisible) {
+                // Repeat the fade in and fade out animation
+                pressToSelectTxt.startAnimation(fadeInOutAnimationSet)
+                handler.postDelayed(this, fadeInOutAnimationSet.duration * 2) // Run every 2 seconds
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         database = Firebase.firestore
 
+        // Initialize views
+        arrowDownImg = findViewById(R.id.arrowDownImg)
+        cardViewAnim = findViewById(R.id.cardViewAnim)
         nestedScrollView2 = findViewById(R.id.nestedScrollView2)
         nestedScrollView6 = findViewById(R.id.nestedScrollView6)
         arrowImageView = findViewById(R.id.arrowImageView)
         cardView8 = findViewById(R.id.cardView8)
+
+        historyTxt = findViewById(R.id.historyTxt)
+        selectedTxt = findViewById(R.id.selectedTxt)
 
 
         recyclerView = findViewById(R.id.ownerRecyclerview)
@@ -114,6 +151,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         deleteAllBtn.isEnabled = false
 
 
+
         val cardView8: CardView = findViewById(R.id.cardView8)
 
         val upDownAnimation: Animation = AnimationUtils.loadAnimation(this, R.anim.up_down)
@@ -123,30 +161,98 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         val arrowImageView = findViewById<ImageView>(R.id.arrowImageView)
 
 
-        // Setup RecyclerViews
-        setupRecyclerViews()
+
+
+        // Initialize views
+
+        pressToSelectTxt = findViewById(R.id.pressToSelectTxt)
+
+        // Load animations
+        scaleOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_open)
+        translateUpAnimation = AnimationUtils.loadAnimation(this, R.anim.translate_up)
+        fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+
+
+
+        // Create an AnimationSet to combine animations
+        animationSet = AnimationSet(true).apply {
+            addAnimation(scaleOpenAnimation)
+            addAnimation(translateUpAnimation)
+            addAnimation(fadeInAnimation)
+            duration = 1000
+            fillAfter = true
+        }
+
+
+        // Automatically show and animate the CardView
+        cardViewAnim.visibility = View.VISIBLE
+        cardViewAnim.startAnimation(animationSet)
+
+
+
+
+        // Load animations
+        fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        fadeOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+
+        // Load animations
+        fadeScaleInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_scale_in)
+        fadeScaleOutAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_scale_out)
+
+
+        // Create an AnimationSet to loop fade-in and fade-out
+        fadeInOutAnimationSet = AnimationSet(true)
+        fadeInOutAnimationSet.addAnimation(fadeInAnimation)
+        fadeInOutAnimationSet.addAnimation(fadeOutAnimation)
+        fadeInOutAnimationSet.duration = 2000 // Total duration of one cycle (1 second fade in, 1 second fade out)
+        fadeInOutAnimationSet.repeatCount = Animation.INFINITE // Repeat forever
+
+        // Initially show the text with fade-in animation
+        pressToSelectTxt.visibility = View.VISIBLE
+        pressToSelectTxt.startAnimation(fadeInOutAnimationSet)
+
+        // Start the repeating animation
+        handler.post(animationRunnable)
 
         // Set click listener for arrowImageView
         arrowImageView.setOnClickListener {
-            toggleNestedScrollViews(it)
+            toggleNestedScrollViews()
+            if (isTextVisible) {
+                // Stop the animation and hide the TextView
+                pressToSelectTxt.clearAnimation()
+                arrowDownImg.clearAnimation()
+                arrowDownImg.visibility = View.GONE
+                cardViewAnim.clearAnimation()
+                cardViewAnim.visibility = View.GONE
+                pressToSelectTxt.visibility = View.GONE
+                isTextVisible = false
+                handler.removeCallbacks(animationRunnable) // Stop repeating animation
+            }
         }
-
     }
 
-    private fun setupRecyclerViews() {
-        // Implementation for setting up RecyclerViews
-    }
-
-    private fun toggleNestedScrollViews(view: View) {
+    private fun toggleNestedScrollViews() {
         if (nestedScrollView2.visibility == View.VISIBLE) {
+
             // Collapse NestedScrollViews
             nestedScrollView2.visibility = View.GONE
             nestedScrollView6.visibility = View.GONE
+            recyclerView.visibility = View.GONE // Hide RecyclerView
+            historyTxt.visibility = View.GONE // Hide historyTxt
+            selectedTxt.visibility = View.GONE // Hide selectedTxt
             arrowImageView.setImageResource(R.drawable.sharp_arrow_drop_up_24)
         } else {
+
+
+            arrowImageView.setImageResource(R.drawable.baseline_arrow_drop_down_24)
+
             // Expand NestedScrollViews
             nestedScrollView2.visibility = View.VISIBLE
             nestedScrollView6.visibility = View.VISIBLE
+
+            recyclerView.visibility = View.VISIBLE // Show RecyclerView
+            historyTxt.visibility = View.VISIBLE // Show historyTxt
+            selectedTxt.visibility = View.VISIBLE // Show selectedTxt
             arrowImageView.setImageResource(R.drawable.baseline_arrow_drop_down_24)
 
             // Scroll nestedScrollView2 to top
@@ -162,6 +268,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
+
     val myDatePicker = findViewById<DatePicker>(R.id.datePicker)
 
         // Set a default date if needed
@@ -173,19 +280,12 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             null
         )
 
-
-
-
-
-
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         selectedDate = dateFormat.format(calendar.time)
 
 
-
         // Set the visibility of the DatePicker based on your requirements
         myDatePicker.visibility = View.VISIBLE // Show the DatePicker initially
-
 
         // Set the listener for date changes
         myDatePicker.setOnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
@@ -194,8 +294,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                 onDateSelected(selectedDate)
             }
         }
-
-
 
 
         val selectedName = intent.getStringExtra("selectedName")

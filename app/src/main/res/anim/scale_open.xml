@@ -1,0 +1,10 @@
+<!-- res/anim/scale_open.xml -->
+<scale xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXScale="0.5"
+    android:toXScale="1.0"
+    android:fromYScale="0.0"
+    android:toYScale="1.0"
+    android:pivotX="50%"
+    android:pivotY="100%"
+    android:duration="1000"
+    android:fillAfter="true" />
