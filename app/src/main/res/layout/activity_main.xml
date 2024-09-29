@@ -19,7 +19,7 @@
             android:layout_width="270dp"
             android:layout_height="30dp"
             android:elevation="8dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:cardBackgroundColor="#7a9e9f"
             app:cardCornerRadius="16dp"
             app:layout_constraintBottom_toTopOf="@+id/nameTextView"

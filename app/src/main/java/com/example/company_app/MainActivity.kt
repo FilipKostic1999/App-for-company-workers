@@ -1,10 +1,12 @@
 package com.example.company_app
 
-
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,8 +25,10 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +36,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.adapters.workDayAdapter
 import com.example.company_app.classes.objectData
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -102,9 +108,34 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        FirebaseApp.initializeApp(this)
+
+        // Create the notification channel
+        NotificationUtils.createNotificationChannel(this)
+
+        // Schedule daily notification
+        NotificationUtils.scheduleDailyNotification(this)
+
+        // Optionally, show a notification immediately for testing
+        NotificationUtils.showNotification(this)
+        // Check notification permission
+
+
+        // Request notification permission if needed
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        } else {
+            // Create notification channel
+            NotificationUtils.createNotificationChannel(this)
+            // Schedule daily notification
+            NotificationUtils.scheduleDailyNotification(this)
+        }
+
 
         database = Firebase.firestore
 
@@ -230,6 +261,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             }
         }
     }
+
+
+
 
     private fun toggleNestedScrollViews() {
         if (nestedScrollView2.visibility == View.VISIBLE) {
@@ -730,8 +764,21 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         return networkInfo != null && networkInfo.isConnected
     }
 
+    // Handle permission result
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                NotificationUtils.createNotificationChannel(this)
+                NotificationUtils.scheduleDailyNotification(this)
+            } else {
+                Snackbar.make(findViewById(android.R.id.content), "Notification permission is required to receive reminders.", Snackbar.LENGTH_LONG).show()
+            }
+        }
+    }
 
 
+}
 
     /*
     override fun onBackPressed() {
@@ -747,4 +794,3 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
-}
