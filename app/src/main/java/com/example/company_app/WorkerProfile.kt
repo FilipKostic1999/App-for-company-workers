@@ -279,7 +279,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                     // Show a single toast message
                     if (toast == null || toast?.view?.isShown != true) {
                         toast?.cancel() // Cancel any previous toast
-                        toast = Toast.makeText(applicationContext, "Maximum 20 lines reached", Toast.LENGTH_SHORT)
+                        toast = Toast.makeText(applicationContext, "<You have reached the maximum number of characters>", Toast.LENGTH_SHORT)
                         toast?.show()
                     }
 

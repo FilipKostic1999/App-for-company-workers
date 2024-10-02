@@ -1,11 +1,20 @@
 package com.example.company_app
 
+import NotificationWorker
+import android.Manifest
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
@@ -22,22 +31,41 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
-import com.example.company_app.classes.userData
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class WorkerSignIn : AppCompatActivity() {
 
 
-
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            scheduleNotificationAtFivePM()
+        } else {
+            // Permission denied, handle accordingly
+        }
+    }
 
 
     private lateinit var binding: ActivityWorkerSignInBinding
@@ -71,6 +99,7 @@ class WorkerSignIn : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -95,6 +124,24 @@ class WorkerSignIn : AppCompatActivity() {
 
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+
+
+        // Create notification channel
+        createNotificationChannel()
+        scheduleNotificationAtFivePM()
+        showNotification()
+
+        // Check for notification permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            scheduleNotificationAtFivePM()// Schedule your notification if permission already granted
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // Begär tillstånd från användaren
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
 
 
         eyeImg = findViewById(R.id.eyeImg)
@@ -256,5 +303,62 @@ class WorkerSignIn : AppCompatActivity() {
         // Move the cursor to the end of the text
         workerSignUpPasEditTexst.setSelection(workerSignUpPasEditTexst.text.length)
     }
-}
 
+    // Notification channel creation
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Default Channel"
+            val descriptionText = "Channel for notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("YOUR_CHANNEL_ID", name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager: NotificationManager =
+                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun showNotification() {
+        createNotificationChannel() // Ensure channel exists
+
+        val builder = NotificationCompat.Builder(applicationContext, "YOUR_CHANNEL_ID")
+            .setSmallIcon(R.drawable.baseline_notifications_24) // Your notification icon
+            .setContentTitle("Check in!") // Title of the notification
+            .setContentText("Remember to check in after finishing work at 5:00 PM.") // Text of the notification
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Set priority
+            .setAutoCancel(true) // Auto cancel when tapped
+
+        with(NotificationManagerCompat.from(applicationContext)) {
+            notify(1, builder.build()) // Show the notification
+        }
+    }
+
+
+    @SuppressLint("ScheduleExactAlarm")
+    private fun scheduleNotificationAtFivePM() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 17)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+        }
+
+        // Kontrollera om 17:00 har passerat för idag, om ja, schemalägg för imorgon
+        if (Calendar.getInstance().after(calendar)) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        // Schemalägg larmet
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            pendingIntent
+        )
+    }
+}
