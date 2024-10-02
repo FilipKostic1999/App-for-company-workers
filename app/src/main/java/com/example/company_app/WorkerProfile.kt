@@ -1,6 +1,7 @@
 package com.example.company_app
 
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -80,6 +81,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     private lateinit var myAdapter: workDayAdapter
     private lateinit var selectedDate: String
     private lateinit var cardViewPuls: CardView
+    private lateinit var progressDialog: ProgressDialog
 
     var isAccountEnabled = true
 
@@ -108,7 +110,10 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         val user = auth.currentUser
 
 
-
+        progressDialog = ProgressDialog(this).apply {
+            setMessage("Laddar...")
+            setCancelable(false)
+        }
 
 
         personC = findViewById(R.id.editTextTextPersonComment)
@@ -201,6 +206,9 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         var documentsCounter = 0 // Counter to keep track of documents
 
         if (user != null) {
+
+            progressDialog.show()
+
             database.collection("Users").document(workerId)
                 .collection("Manifesto")
                 .addSnapshotListener { snapshot, e ->
@@ -215,6 +223,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                         if (snapshot.isEmpty) {
                             // No documents in the snapshot, enable the button
                             saveBtn.isEnabled = true
+                            progressDialog.dismiss()
                         } else {
                             for (document in snapshot.documents) {
                                 objectDataItem = document.toObject()!!
@@ -232,7 +241,10 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                                     myAdapter.notifyDataSetChanged()
                                 }
                             }
+                            progressDialog.dismiss()
                         }
+                    } else {
+                        progressDialog.dismiss()
                     }
                 }
         } else {
@@ -349,16 +361,21 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
             if (isInternetAvailable()) {
                 if (isAccountEnabled) {
 
+                    val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) // Get today's date
 
-                    var allowSave = true
-                    for (document in listOfDocuments) {
-                        if (selectedDate == document.date) {
-                            allowSave = false
-                            Toast.makeText(this, "Document with same date already exists!", Toast.LENGTH_SHORT).show()
+                    if (selectedDate == today) { // Check if selected date matches today's date
+                        // Check if personC text length is 350 or lower
+                        if (personC.text.length <= 300) {
+                            val allowSave = true
+
+                            if (allowSave) {
+                                saveItem()
+                            }
+                        } else {
+                            Toast.makeText(this, "Comment cannot exceed 350 characters", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                    if (allowSave) {
-                        saveItem()
+                    } else {
+                        Toast.makeText(this, "You can only add or edit today's work hour", Toast.LENGTH_SHORT).show()
                     }
 
                 } else {
@@ -368,6 +385,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
             }
         }
+
 
 
 
@@ -395,16 +413,23 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
     fun saveItem() {
 
+        progressDialog.show()
+
         var selectedDateNumbers = selectedDate.replace(Regex("[^0-9]"), "")
 
-        val workHoursInputDouble = workHoursEditText.text.toString().toDouble()
+        var workHoursInputDouble = 0.0
+
+        if (workHoursEditText.text.isNotEmpty()) {
+            workHoursInputDouble = workHoursEditText.text.toString().toDouble()
+        }
+
         val hours = workHoursInputDouble.toString()
 
         try {
 
 
             val item = objectData(hours, selectedDate, personC.text.toString(), workerName,
-                workerEmail, workerId)
+                workerEmail, selectedDate)
 
 
             val user = auth.currentUser
@@ -413,9 +438,11 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                 database.collection("Users").document(workerId)
                     .collection("Manifesto").document(selectedDate).set(item)
                     .addOnSuccessListener {
+                        progressDialog.dismiss()
                         Toast.makeText(this, "Item correctly saved", Toast.LENGTH_SHORT).show()
                     }
             } else {
+                progressDialog.dismiss()
                 Toast.makeText(this, "You are logged out due to a problem", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, WorkerSignIn::class.java)
                 startActivity(intent)
@@ -424,6 +451,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
         } catch (e: NumberFormatException) {
+            progressDialog.dismiss()
             // Handle the case where input is not a valid double
             // For example, show a Toast message or set a default value
             Toast.makeText(this, "Invalid input for work hours", Toast.LENGTH_SHORT).show()

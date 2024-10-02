@@ -1,14 +1,13 @@
 package com.example.company_app
 
-import NotificationWorker
 import android.Manifest
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,45 +15,35 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.animation.LinearInterpolator
-import android.view.animation.ScaleAnimation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 class WorkerSignIn : AppCompatActivity() {
 
@@ -74,6 +63,8 @@ class WorkerSignIn : AppCompatActivity() {
     lateinit var adminImg: ImageView
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var plåtImg: ImageView
+
+    private lateinit var progressDialog: ProgressDialog
 
     lateinit var database : FirebaseFirestore
     lateinit var nameInDatabase : username
@@ -121,7 +112,10 @@ class WorkerSignIn : AppCompatActivity() {
 
 
 
-
+        progressDialog = ProgressDialog(this).apply {
+            setMessage("Laddar...")
+            setCancelable(false)
+        }
 
 
 
@@ -174,6 +168,8 @@ class WorkerSignIn : AppCompatActivity() {
             val email = binding.workerSignUpEmailEditTexst.text.toString()
             val pass = binding.workerSignUpPasEditTexst.text.toString()
 
+            progressDialog.show()
+
             if (isInternetAvailable()) {
                 if (email.isNotEmpty() && pass.isNotEmpty()) {
                     firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener { authTask ->
@@ -184,34 +180,47 @@ class WorkerSignIn : AppCompatActivity() {
                                     .get()
                                     .addOnSuccessListener { document ->
                                         if (document.exists()) {
-                                            val userData = document.toObject<userData>()
+                                            // Fetch each field individually
+                                            val userId = document.getString("userUID")
+                                            val isBlocked = document.getBoolean("isBlocked") ?: false
+                                            val workerName = document.getString("name")
+                                            val workerEmail = document.getString("email")
+
+                                            // Pass the retrieved data to the intent
                                             val intent = Intent(this, WorkerProfile::class.java)
-                                            intent.putExtra("userId", userData?.userUID)
-                                            intent.putExtra("isWorkerBlocked", userData?.isBlocked)
-                                            intent.putExtra("workerName", userData?.name)
-                                            intent.putExtra("workerEmail", userData?.email)
+                                            intent.putExtra("userId", userId)
+                                            intent.putExtra("isWorkerBlocked", isBlocked)
+                                            intent.putExtra("workerName", workerName)
+                                            intent.putExtra("workerEmail", workerEmail)
+                                            progressDialog.dismiss()
                                             startActivity(intent)
                                         } else {
                                             Toast.makeText(this, "Document not found", Toast.LENGTH_SHORT).show()
+                                            progressDialog.dismiss()
                                         }
                                     }
                                     .addOnFailureListener { exception ->
                                         Toast.makeText(this, "Log in failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                        progressDialog.dismiss()
                                     }
 
                             } else {
                                 Toast.makeText(this, "The user is null", Toast.LENGTH_SHORT).show()
+                                progressDialog.dismiss()
                             }
                         } else {
                             Toast.makeText(this, authTask.exception.toString(), Toast.LENGTH_SHORT).show()
                             Log.d("!!!", authTask.exception.toString())
+                            progressDialog.dismiss()
                         }
                     }
                 } else {
                     Toast.makeText(this, "There are empty fields", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
                 }
             } else {
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
             }
         }
 
