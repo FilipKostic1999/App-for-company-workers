@@ -12,6 +12,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Build
@@ -41,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -129,19 +131,24 @@ class WorkerSignIn : AppCompatActivity() {
 
         // Create notification channel
         createNotificationChannel()
-        scheduleNotificationAtFivePM()
         showNotification()
 
+
+        // Check for notification permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // Begär tillstånd från användaren
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        } else {
+            // Schemalägg din notifikation om tillstånd redan har beviljats
+            scheduleNotificationAtFivePM()
+        }
         // Check for notification permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             scheduleNotificationAtFivePM()// Schedule your notification if permission already granted
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // Begär tillstånd från användaren
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
-        }
+
 
 
         eyeImg = findViewById(R.id.eyeImg)
@@ -324,41 +331,62 @@ class WorkerSignIn : AppCompatActivity() {
     private fun showNotification() {
         createNotificationChannel() // Ensure channel exists
 
-        val builder = NotificationCompat.Builder(applicationContext, "YOUR_CHANNEL_ID")
-            .setSmallIcon(R.drawable.baseline_notifications_24) // Your notification icon
-            .setContentTitle("Check in!") // Title of the notification
-            .setContentText("Remember to check in after finishing work at 5:00 PM.") // Text of the notification
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Set priority
-            .setAutoCancel(true) // Auto cancel when tapped
+        // Ladda den stora ikonen från drawable-resurser
+        val largeIcon = BitmapFactory.decodeResource(applicationContext.resources, R.drawable.work) // Ersätt med din stora ikon
 
+        // Bygg notifikationen
+        val builder = NotificationCompat.Builder(applicationContext, "YOUR_CHANNEL_ID")
+            .setSmallIcon(R.drawable.baseline_notifications_24) // Din notifikationsikon
+            .setLargeIcon(largeIcon) // Den stora ikonen som visas
+            .setContentTitle("Check in!") // Titeln på notifikationen
+            .setContentText("Remember to check in after finishing work at 5:00 PM.") // Texten i notifikationen
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Sätt prioritet
+            .setAutoCancel(true) // Auto avbryt när den trycks
+            .setStyle(NotificationCompat.BigTextStyle().bigText("Remember to check in after finishing work at 5:00 PM.")) // Utökad textstil
+
+        // Visa notifikationen
         with(NotificationManagerCompat.from(applicationContext)) {
-            notify(1, builder.build()) // Show the notification
+            notify(1, builder.build()) // Visa notifikationen med ID 1
         }
     }
+
+
+
 
 
     @SuppressLint("ScheduleExactAlarm")
     private fun scheduleNotificationAtFivePM() {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 17)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-        }
+        // Lägg till FLAG_IMMUTABLE till PendingIntent
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        // Kontrollera om 17:00 har passerat för idag, om ja, schemalägg för imorgon
-        if (Calendar.getInstance().after(calendar)) {
+        // Hämta nuvarande tid och sätt alarmet till 17:00
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 16)
+        calendar.set(Calendar.MINUTE, 50)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        // Om tiden för dagen redan har passerat, schemalägg för nästa dag
+        if (calendar.timeInMillis < System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        // Schemalägg larmet
-        alarmManager.setExact(
+        // Schemalägg alarmet
+        alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }
 }
+
+
