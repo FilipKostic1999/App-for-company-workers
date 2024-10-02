@@ -113,28 +113,8 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        FirebaseApp.initializeApp(this)
-
-        // Create the notification channel
-        NotificationUtils.createNotificationChannel(this)
-
-        // Schedule daily notification
-        NotificationUtils.scheduleDailyNotification(this)
-
-        // Optionally, show a notification immediately for testing
-        NotificationUtils.showNotification(this)
-        // Check notification permission
 
 
-        // Request notification permission if needed
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
-        } else {
-            // Create notification channel
-            NotificationUtils.createNotificationChannel(this)
-            // Schedule daily notification
-            NotificationUtils.scheduleDailyNotification(this)
-        }
 
 
         database = Firebase.firestore
@@ -763,21 +743,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
         return networkInfo != null && networkInfo.isConnected
     }
-
-    // Handle permission result
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                NotificationUtils.createNotificationChannel(this)
-                NotificationUtils.scheduleDailyNotification(this)
-            } else {
-                Snackbar.make(findViewById(android.R.id.content), "Notification permission is required to receive reminders.", Snackbar.LENGTH_LONG).show()
-            }
-        }
-    }
-
-
 }
 
     /*

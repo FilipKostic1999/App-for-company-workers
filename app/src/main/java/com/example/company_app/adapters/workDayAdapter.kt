@@ -36,6 +36,7 @@ class workDayAdapter(private val manifestoList: ArrayList<objectData>) :
     override fun onBindViewHolder(holder: workDayViewHolder, position: Int) {
         val manifesto = manifestoList[position]
         holder.bind(manifesto)
+
     }
 
     override fun getItemCount(): Int {
