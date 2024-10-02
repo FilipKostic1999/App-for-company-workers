@@ -65,26 +65,31 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
-            database.collection("Users")
-                .addSnapshotListener { snapshot, e ->
-                    if (snapshot != null) {
-                        listOfUsers.clear()
-                        myAdapterNames.notifyDataSetChanged()
-                        for (document in snapshot.documents) {
-                            user = document.toObject()!!
-                            if (user.isBlocked == false) {
-                                listOfUsers.add(user)
-                            }
+        database.collection("Users")
+            .addSnapshotListener { snapshot, e ->
+                if (snapshot != null) {
+                    listOfUsers.clear()
+                    myAdapterNames.notifyDataSetChanged()
+
+                    for (document in snapshot.documents) {
+                        val user = document.toObject<userData>()
+                        user?.isBlocked = document.getBoolean("isBlocked") ?: false
+                        if (!user!!.isBlocked) {
+                            listOfUsers.add(user)
                         }
-                        for (document in snapshot.documents) {
-                            user = document.toObject()!!
-                            if (user.isBlocked == true) {
-                                listOfUsers.add(user)
-                            }
-                        }
-                        myAdapterNames.notifyDataSetChanged()
                     }
+
+                    for (document in snapshot.documents) {
+                        val user = document.toObject<userData>()
+                        user?.isBlocked = document.getBoolean("isBlocked") ?: false
+                        if (user!!.isBlocked) {
+                            listOfUsers.add(user)
+                        }
+                    }
+
+                    myAdapterNames.notifyDataSetChanged()
                 }
+            }
 
 
 
@@ -118,26 +123,32 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
     override fun onDeleteUserClick(name: userData) {
+        val isAccountDisabled = name.isBlocked
 
-        var isAccountDisabled = name.isBlocked
 
         if (isAccountDisabled) {
-            name.isBlocked = false
+            // Update only the isBlocked field to false
             database.collection("Users")
-                .document(name.userUID).set(name)
+                .document(name.userUID)
+                .update("isBlocked", false)
                 .addOnSuccessListener {
                     Toast.makeText(this, "${name.name}`s account enabled", Toast.LENGTH_SHORT).show()
                 }
-        } else if (!isAccountDisabled) {
-            name.isBlocked = true
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error enabling account: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            // Update only the isBlocked field to true
             database.collection("Users")
-                .document(name.userUID).set(name)
+                .document(name.userUID)
+                .update("isBlocked", true)
                 .addOnSuccessListener {
                     Toast.makeText(this, "${name.name}`s account disabled", Toast.LENGTH_SHORT).show()
                 }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error disabling account: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
         }
-
-
     }
 
 
