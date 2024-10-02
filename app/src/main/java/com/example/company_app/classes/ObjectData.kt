@@ -1,9 +1,12 @@
 package com.example.company_app.classes
 
-import com.google.firebase.firestore.DocumentId
 
+class objectData(var hours: String = "",
+                      var date: String? = "",
+                 var comment: String? = "",
+                 var name : String? = "",
+                      var email: String = "",
+                 var documentId : String = "") {
 
-data class objectData(@DocumentId var DocumentId: String? = null, var hours: Double = 0.0,
-                      var date: String? = null, var comment: String? = null, var userIdentity : String? = null,
-                      var totalHours: Double = 0.0, var preOrder : Int = 1, var order : Int = 0)
+}
 

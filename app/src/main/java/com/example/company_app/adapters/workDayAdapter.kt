@@ -59,8 +59,8 @@ class workDayAdapter(private val manifestoList: ArrayList<objectData>) :
         private val date: TextView = itemView.findViewById(R.id.tv_date)
 
         fun bind(manifesto: objectData) {
-            name.text = manifesto.userIdentity
-            hours.text = manifesto.hours.toString()
+            name.text = manifesto.name
+            hours.text = manifesto.hours
             comment.text = manifesto.comment
             date.text = manifesto.date
 

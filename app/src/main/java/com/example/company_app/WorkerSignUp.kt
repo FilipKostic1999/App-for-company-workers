@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignUpBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -106,22 +107,21 @@ class WorkerSignUp : AppCompatActivity() {
                                 to avoid a possible same name user to fetch the same data of another
                                 user with the same name
                                  */
+
+                                    /*
                                     val timestamp = System.currentTimeMillis()
                                     val random = Random(timestamp)
                                     val codeID = String.format("%06d", random.nextInt(1000000))
 
+                                     */
+
                                     if (userId != null) {
 
-                                        val userData = username(name, codeID, false)
+                                        val userData = userData(email, false, name, pass,
+                                            userId)
 
                                         database.collection("Users")
-                                            .document(user.uid).collection("user data")
-                                            .document("$name $codeID").set(userData)
-
-                                        database.collection("Director view")
-                                            .document("$name $codeID").set(userData)
-
-
+                                            .document(user.uid).set(userData)
                                             .addOnSuccessListener {
                                                 // Document successfully written
                                                 Toast.makeText(
@@ -129,8 +129,12 @@ class WorkerSignUp : AppCompatActivity() {
                                                     "User registered",
                                                     Toast.LENGTH_SHORT
                                                 ).show()
+                                                fetchUserData(userData)
+                                                /*
                                                 val intent = Intent(this, OwnerShowRecycleview::class.java)
                                                 startActivity(intent)
+
+                                                 */
 
                                             }
                                             .addOnFailureListener { e ->
@@ -209,4 +213,41 @@ class WorkerSignUp : AppCompatActivity() {
         // Move the cursor to the end of the text
         workerSignUpPas2EditTexst.setSelection(workerSignUpPas2EditTexst.text.length)
     }
+
+
+
+
+    fun fetchUserData(userData: userData) {
+
+        database.collection("Users")
+            .document(userData.userUID).get()
+            .addOnSuccessListener {
+
+                val intent = Intent(this, OwnerShowRecycleview::class.java)
+                startActivity(intent)
+
+
+            }
+            .addOnFailureListener { e ->
+                // Handle errors writing the document
+                Toast.makeText(
+                    this,
+                    "Error saving user data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

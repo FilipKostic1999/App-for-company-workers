@@ -59,8 +59,11 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
     var calculator : Double = 0.0
     var counter : Int = 0
-    var dataWorker = ""
+    var isBlocked = true
     private var touches = 0
+    var workerName = ""
+    var workerId = ""
+    var workerEmail = ""
 
 
     lateinit var database : FirebaseFirestore
@@ -125,10 +128,24 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         cardViewPuls.startAnimation(animation)
 
 
-        dataWorker = intent.getStringExtra("dataWorker")!!
-        var workerName = intent.getStringExtra("workerName")
-        var workerId = intent.getStringExtra("workerId")
+        isBlocked = intent.getBooleanExtra("isWorkerBlocked", true)
+        workerName = intent.getStringExtra("workerName")!!
+        workerId = intent.getStringExtra("userId")!!
+        workerEmail = intent.getStringExtra("workerEmail")!!
         personN.text = workerName
+
+
+
+        if (isBlocked) {
+            isAccountEnabled = false
+        } else {
+            isAccountEnabled = true
+        }
+
+
+
+
+
 
         val editTextTextPersonComment = findViewById<EditText>(R.id.editTextTextPersonComment)
         val workHoursEditText = findViewById<EditText>(R.id.workHoursEditText)
@@ -148,7 +165,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         spinner.adapter = adapter
 
         // Set current date as default selected date
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         spinner.setSelection(adapter.getPosition(currentDate))
         selectedDate = currentDate
 
@@ -184,8 +201,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         var documentsCounter = 0 // Counter to keep track of documents
 
         if (user != null) {
-            database.collection("Director view").document(dataWorker)
-                .collection("Days")
+            database.collection("Users").document(workerId)
+                .collection("Manifesto")
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
                         listOfDocuments.clear()
@@ -227,7 +244,9 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
+/*
 
+// It blocks access to user if its blocked
 
         if (user != null) {
             database.collection("Director view")
@@ -245,6 +264,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                 }
         }
 
+
+ */
 
 
 
@@ -327,6 +348,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
         saveBtn.setOnClickListener {
             if (isInternetAvailable()) {
                 if (isAccountEnabled) {
+
+
                     var allowSave = true
                     for (document in listOfDocuments) {
                         if (selectedDate == document.date) {
@@ -360,7 +383,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
     private fun dateToMillis(dateString: String): Long {
-        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = format.parse(dateString)
         return date?.time ?: 0
     }
@@ -374,29 +397,21 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
         var selectedDateNumbers = selectedDate.replace(Regex("[^0-9]"), "")
 
-        val workHoursInput = workHoursEditText.text.toString()
+        val workHoursInputDouble = workHoursEditText.text.toString().toDouble()
+        val hours = workHoursInputDouble.toString()
 
         try {
-            val workHours = workHoursInput.toDouble()
 
-            // Continue with your code here
-            val item = objectData(
-                comment = personC.text.toString(),
-                hours = workHours,
-                totalHours = 0.0,
-                userIdentity = personN.text.toString(),
-                order = counter,
-                date = selectedDate,
-                preOrder = 1
-            )
 
+            val item = objectData(hours, selectedDate, personC.text.toString(), workerName,
+                workerEmail, workerId)
 
 
             val user = auth.currentUser
 
             if (user != null) {
-                database.collection("Director view").document(dataWorker)
-                    .collection("Days").document(selectedDateNumbers).set(item)
+                database.collection("Users").document(workerId)
+                    .collection("Manifesto").document(selectedDate).set(item)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Item correctly saved", Toast.LENGTH_SHORT).show()
                     }
@@ -444,7 +459,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
         // Add dates from current date to three months ago
         repeat(90) {
-            datesList.add(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time))
+            datesList.add(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time))
             calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
 
