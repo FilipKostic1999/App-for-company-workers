@@ -23,6 +23,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 import com.example.company_app.databinding.ActivityWorkerSignInBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -126,23 +127,24 @@ class WorkerSignIn : AppCompatActivity() {
                             val user = firebaseAuth.currentUser
                             if (user != null) {
                                 database.collection("Users").document(user.uid)
-                                    .collection("user data")
                                     .get()
-                                    .addOnSuccessListener { documents ->
-                                        for (document in documents) {
-                                            nameInDatabase = document.toObject()!!
-                                            dataWorker = "${nameInDatabase.name} ${nameInDatabase.numberID}"
-                                            val workerName = nameInDatabase.name
+                                    .addOnSuccessListener { document ->
+                                        if (document.exists()) {
+                                            val userData = document.toObject<userData>()
                                             val intent = Intent(this, WorkerProfile::class.java)
-                                            intent.putExtra("workerId", "${nameInDatabase.numberID}")
-                                            intent.putExtra("dataWorker", dataWorker)
-                                            intent.putExtra("workerName", workerName)
+                                            intent.putExtra("userId", userData?.userUID)
+                                            intent.putExtra("isWorkerBlocked", userData?.isBlocked)
+                                            intent.putExtra("workerName", userData?.name)
+                                            intent.putExtra("workerEmail", userData?.email)
                                             startActivity(intent)
+                                        } else {
+                                            Toast.makeText(this, "Document not found", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                     .addOnFailureListener { exception ->
-                                        Toast.makeText(this, "Log in failed", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Log in failed: ${exception.message}", Toast.LENGTH_SHORT).show()
                                     }
+
                             } else {
                                 Toast.makeText(this, "The user is null", Toast.LENGTH_SHORT).show()
                             }

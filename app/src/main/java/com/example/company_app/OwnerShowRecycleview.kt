@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.adapters.MyAdapterName
+import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -23,9 +24,9 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
     private lateinit var recyclerViewNames: RecyclerView
-    private lateinit var listOfNames: ArrayList<username>
+    private lateinit var listOfUsers: ArrayList<userData>
     private lateinit var myAdapterNames: MyAdapterName
-    lateinit var name: username
+    lateinit var user: userData
     lateinit var plusImg: ImageView
 
 
@@ -50,9 +51,9 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
-        listOfNames = arrayListOf()
-        listOfNames.clear()
-        myAdapterNames = MyAdapterName(listOfNames)
+        listOfUsers = arrayListOf()
+        listOfUsers.clear()
+        myAdapterNames = MyAdapterName(listOfUsers)
         recyclerViewNames.adapter = myAdapterNames
         myAdapterNames.setOnShowClickListener(this)
         myAdapterNames.setOnDeleteUserClickListener(this)
@@ -64,21 +65,21 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
-            database.collection("Director view")
+            database.collection("Users")
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
-                        listOfNames.clear()
+                        listOfUsers.clear()
                         myAdapterNames.notifyDataSetChanged()
                         for (document in snapshot.documents) {
-                            name = document.toObject()!!
-                            if (name.isAccountDisabled == false) {
-                                listOfNames.add(name)
+                            user = document.toObject()!!
+                            if (user.isBlocked == false) {
+                                listOfUsers.add(user)
                             }
                         }
                         for (document in snapshot.documents) {
-                            name = document.toObject()!!
-                            if (name.isAccountDisabled == true) {
-                                listOfNames.add(name)
+                            user = document.toObject()!!
+                            if (user.isBlocked == true) {
+                                listOfUsers.add(user)
                             }
                         }
                         myAdapterNames.notifyDataSetChanged()
@@ -105,9 +106,9 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
-    override fun onShowClick(name: username) {
+    override fun onShowClick(name: userData) {
         val selectedName = name.name
-        val userId = name.numberID
+        val userId = name.userUID
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("selectedName", selectedName)
         intent.putExtra("userId", userId)
@@ -116,21 +117,21 @@ class OwnerShowRecycleview : AppCompatActivity(), MyAdapterName.OnShowClickListe
 
 
 
-    override fun onDeleteUserClick(name: username) {
+    override fun onDeleteUserClick(name: userData) {
 
-        var isAccountDisabled = name.isAccountDisabled
+        var isAccountDisabled = name.isBlocked
 
         if (isAccountDisabled) {
-            name.isAccountDisabled = false
-            database.collection("Director view")
-                .document("${name.name} ${name.numberID}").set(name)
+            name.isBlocked = false
+            database.collection("Users")
+                .document(name.userUID).set(name)
                 .addOnSuccessListener {
                     Toast.makeText(this, "${name.name}`s account enabled", Toast.LENGTH_SHORT).show()
                 }
         } else if (!isAccountDisabled) {
-            name.isAccountDisabled = true
-            database.collection("Director view")
-                .document("${name.name} ${name.numberID}").set(name)
+            name.isBlocked = true
+            database.collection("Users")
+                .document(name.userUID).set(name)
                 .addOnSuccessListener {
                     Toast.makeText(this, "${name.name}`s account disabled", Toast.LENGTH_SHORT).show()
                 }

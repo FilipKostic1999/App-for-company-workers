@@ -13,20 +13,21 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.company_app.R
 import com.example.company_app.classes.objectData
+import com.example.company_app.classes.userData
 import com.example.company_app.classes.username
 
-class MyAdapterName(private val nameList: ArrayList<username>) :
+class MyAdapterName(private val nameList: ArrayList<userData>) :
     RecyclerView.Adapter<MyAdapterName.nameViewHolder>() {
 
     private var onShowClickListener: OnShowClickListener? = null
     private var onDeleteUserClickListener: OnDeleteUserClickListener? = null
 
     interface OnShowClickListener {
-        fun onShowClick(name: username)
+        fun onShowClick(name: userData)
     }
 
     interface OnDeleteUserClickListener {
-        fun onDeleteUserClick(name: username)
+        fun onDeleteUserClick(name: userData)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): nameViewHolder {
@@ -56,7 +57,7 @@ class MyAdapterName(private val nameList: ArrayList<username>) :
         private val viewImg: ImageView = itemView.findViewById(R.id.viewImg)
         private val deleteUser: Button = itemView.findViewById(R.id.deleteUser)
 
-        fun bind(name: username) {
+        fun bind(name: userData) {
             nameWorker.text = name.name
 
             nameWorker.setOnClickListener {
@@ -76,7 +77,7 @@ class MyAdapterName(private val nameList: ArrayList<username>) :
                 }
             }
 
-            if (name.isAccountDisabled) {
+            if (name.isBlocked) {
                 deleteUser.text = "Unblock user"
             } else {
                 deleteUser.text = "Block user"
