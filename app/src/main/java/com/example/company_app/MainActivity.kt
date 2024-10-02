@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     var selectedFromDate = ""
     var selectedToDate = ""
     var selectedDate = ""
+    var userId = ""
     var isAllDataFetched = false
 
 
@@ -294,7 +295,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             null
         )
 
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         selectedDate = dateFormat.format(calendar.time)
 
 
@@ -303,15 +304,19 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         // Set the listener for date changes
         myDatePicker.setOnDateChangedListener { _, year, monthOfYear, dayOfMonth ->
-            selectedDate = "$dayOfMonth/${monthOfYear + 1}/$year"
-            if (isAllDataFetched) {  // makes sure all data is available first before interaction
+            val calendar = Calendar.getInstance()
+            calendar.set(year, monthOfYear, dayOfMonth)
+            val selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+
+            if (isAllDataFetched) {
                 onDateSelected(selectedDate)
             }
         }
 
 
+
         val selectedName = intent.getStringExtra("selectedName")
-        val userId = intent.getStringExtra("userId")
+        userId = intent.getStringExtra("userId")!!
         dataWorker = "$selectedName $userId"
 
 
@@ -336,8 +341,8 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
 
-            database.collection("Director view").document(dataWorker)
-                .collection("Days")
+            database.collection("Users").document(userId!!)
+                .collection("Manifesto")
                 .addSnapshotListener { snapshot, e ->
                     if (snapshot != null) {
                         listOfDocuments.clear()
@@ -401,7 +406,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         fromDateSpinner.adapter = fromDateAdapter
 
         // Set current date as default selected date
-        val currentFromDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val currentFromDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         fromDateSpinner.setSelection(fromDateAdapter.getPosition(currentFromDate))
         selectedFromDate = currentFromDate
 
@@ -435,7 +440,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         toDateSpinner.adapter = toDateAdapter
 
 // Set current date as default selected date
-        val currentToDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val currentToDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         toDateSpinner.setSelection(toDateAdapter.getPosition(currentToDate))
         selectedToDate = currentToDate
 
@@ -463,14 +468,14 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                 var totalHoursWorked = 0.0
 
                 val fromDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedFromDate)
                 val toDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedToDate)
 
                 for (document in listOfDocuments) {
                     // Check if the document date is within the selected date range
                     if (isDateWithinRange(document.date, fromDate, toDate)) {
-                        totalHoursWorked += document.hours
+                        totalHoursWorked += document.hours.toDouble()
                     }
                 }
 
@@ -491,9 +496,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         deleteBtn.setOnClickListener {
             if (isInternetAvailable()) {
                 val fromDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedFromDate)
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedFromDate)
                 val toDate =
-                    SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedToDate)
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedToDate)
 
                 val alertDialogBuilder = AlertDialog.Builder(this)
                 alertDialogBuilder.setTitle("Confirmation")
@@ -553,9 +558,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         var documentsDeleted = 0
         for (document in listOfDocuments) {
             if (isDateWithinRange(document.date, fromDate, toDate)) {
-                val dateNumbers = document.date!!.replace(Regex("[^0-9]"), "")
-                database.collection("Director view").document(dataWorker)
-                    .collection("Days").document(dateNumbers).delete()
+                val dateNumbers = document.date!!
+                database.collection("Users").document(userId!!)
+                    .collection("Manifesto").document(dateNumbers).delete()
                     .addOnSuccessListener {
                         documentsDeleted++
                     }
@@ -573,9 +578,9 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         var documentsDeleted = 0
 
         for (document in listOfDocuments) {
-                val dateNumbers = document.date!!.replace(Regex("[^0-9]"), "")
-                database.collection("Director view").document(dataWorker)
-                    .collection("Days").document(dateNumbers).delete()
+                val date = document.date!!
+            database.collection("Users").document(userId!!)
+                .collection("Manifesto").document(date).delete()
                     .addOnSuccessListener {
                         documentsDeleted++
                     }
@@ -593,31 +598,26 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
     private fun onDateSelected(selectedDate: String) {
-        // Parse selectedDate into a Date object
-        val selectedDateTime = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedDate)
+        // No need to re-parse the selectedDate since it's already in the correct format
+        val selectedObjectData = listOfDocuments.find {
+            println("Comparing: ${it.date} with $selectedDate") // Debugging
+            it.date == selectedDate
+        }
 
-        // Format the Date object back to the desired string format
-        val formattedSelectedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDateTime)
-
-        val selectedObjectData = listOfDocuments.find { it.date == formattedSelectedDate }
+        listOfSelectedDocuments.clear()
 
         if (selectedObjectData != null) {
-            listOfSelectedDocuments.clear()
-            adapterSelectedItem.notifyDataSetChanged()
             listOfSelectedDocuments.add(selectedObjectData)
-            adapterSelectedItem.notifyDataSetChanged()
-        } else {
-            listOfSelectedDocuments.clear()
-            adapterSelectedItem.notifyDataSetChanged()
-           // Toast.makeText(this, "No matching dates", Toast.LENGTH_SHORT).show()
         }
+
+        adapterSelectedItem.notifyDataSetChanged()
     }
 
 
 
 
     private fun dateToMillis(dateString: String): Long {
-        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = format.parse(dateString)
         return date?.time ?: 0
     }
@@ -631,7 +631,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             return false
         }
 
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         // Parse the date from the document
         val documentDate = sdf.parse(dateString)
@@ -647,11 +647,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     override fun onDeleteClick(manifesto: objectData) {
         if (isAllDataFetched) { // makes sure all data is available first before interaction
             var dateNumbers = manifesto.date
-            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
 
 
-            database.collection("Director view").document(dataWorker)
-                .collection("Days").document(dateNumbers).delete()
+            database.collection("Users").document(userId)
+                .collection("Manifesto").document(dateNumbers.toString()).delete()
                 .addOnSuccessListener {
                     Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
                 }
@@ -677,7 +676,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
 
             var dateNumbers = manifesto.date
-            dateNumbers = dateNumbers!!.replace(Regex("[^0-9]"), "")
 
             val alertDialogBuilder = AlertDialog.Builder(this)
                 .setView(dialogView)
@@ -690,10 +688,10 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
                 val commentValue = commentEditText.text.toString()
 
                 if (numberValue != null) {
-                    manifesto.hours = numberValue
+                    manifesto.hours = numberValue.toString()
                     manifesto.comment = commentValue
-                    database.collection("Director view").document(dataWorker)
-                        .collection("Days").document(dateNumbers).set(manifesto)
+                    database.collection("Users").document(userId)
+                        .collection("Manifesto").document(dateNumbers.toString()).set(manifesto)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Item edited", Toast.LENGTH_SHORT).show()
                         }
@@ -728,7 +726,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         // Add dates from current date to three months ago
         repeat(400) {
-            datesList.add(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(calendar.time))
+            datesList.add(SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time))
             calendar.add(Calendar.DAY_OF_MONTH, -1)
         }
 
