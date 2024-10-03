@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     lateinit var deleteBtn: Button
     lateinit var deleteAllBtn: Button
 
-    private lateinit var pressToSelectTxt: TextView
+
     private lateinit var fadeInAnimation: Animation
     private lateinit var fadeOutAnimation: Animation
     private lateinit var fadeInOutAnimationSet: AnimationSet
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     private lateinit var scaleOpenAnimation: Animation
     private lateinit var translateUpAnimation: Animation
     private lateinit var animationSet: AnimationSet
-    private lateinit var arrowDownImg: ImageView
+
 
 
     var dataWorker = ""
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
     private lateinit var cardView8: CardView
 
-    private lateinit var cardViewAnim: CardView
+
 
     private lateinit var fadeScaleInAnimation: Animation
     private lateinit var fadeScaleOutAnimation: Animation
@@ -101,11 +101,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
     private val handler = Handler()
     private val animationRunnable = object : Runnable {
         override fun run() {
-            if (isTextVisible) {
-                // Repeat the fade in and fade out animation
-                pressToSelectTxt.startAnimation(fadeInOutAnimationSet)
-                handler.postDelayed(this, fadeInOutAnimationSet.duration * 2) // Run every 2 seconds
-            }
+
         }
     }
 
@@ -121,8 +117,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         database = Firebase.firestore
 
         // Initialize views
-        arrowDownImg = findViewById(R.id.arrowDownImg)
-        cardViewAnim = findViewById(R.id.cardViewAnim)
+
         nestedScrollView2 = findViewById(R.id.nestedScrollView2)
         nestedScrollView6 = findViewById(R.id.nestedScrollView6)
         arrowImageView = findViewById(R.id.arrowImageView)
@@ -177,7 +172,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
 
         // Initialize views
 
-        pressToSelectTxt = findViewById(R.id.pressToSelectTxt)
+
 
         // Load animations
         scaleOpenAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_open)
@@ -196,9 +191,6 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         }
 
 
-        // Automatically show and animate the CardView
-        cardViewAnim.visibility = View.VISIBLE
-        cardViewAnim.startAnimation(animationSet)
 
 
 
@@ -219,9 +211,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
         fadeInOutAnimationSet.duration = 2000 // Total duration of one cycle (1 second fade in, 1 second fade out)
         fadeInOutAnimationSet.repeatCount = Animation.INFINITE // Repeat forever
 
-        // Initially show the text with fade-in animation
-        pressToSelectTxt.visibility = View.VISIBLE
-        pressToSelectTxt.startAnimation(fadeInOutAnimationSet)
+
 
         // Start the repeating animation
         handler.post(animationRunnable)
@@ -231,12 +221,7 @@ class MainActivity : AppCompatActivity(), workDayAdapter.OnDeleteClickListener, 
             toggleNestedScrollViews()
             if (isTextVisible) {
                 // Stop the animation and hide the TextView
-                pressToSelectTxt.clearAnimation()
-                arrowDownImg.clearAnimation()
-                arrowDownImg.visibility = View.GONE
-                cardViewAnim.clearAnimation()
-                cardViewAnim.visibility = View.GONE
-                pressToSelectTxt.visibility = View.GONE
+
                 isTextVisible = false
                 handler.removeCallbacks(animationRunnable) // Stop repeating animation
             }

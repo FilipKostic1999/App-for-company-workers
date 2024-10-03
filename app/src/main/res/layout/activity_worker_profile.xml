@@ -50,7 +50,7 @@
         android:ems="10"
         android:fontFamily="@font/cormorant_garamond_bold"
         android:gravity="start|top"
-        android:hint="Add comment"
+        android:hint="Leave a Comment (Limit: 300 Characters)"
         android:inputType="textMultiLine"
         android:maxLines="20"
         android:paddingStart="10dp"

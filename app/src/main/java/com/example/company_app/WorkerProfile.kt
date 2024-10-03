@@ -83,6 +83,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
     private lateinit var cardViewPuls: CardView
     private lateinit var progressDialog: ProgressDialog
 
+
+
     var isAccountEnabled = true
 
 
@@ -281,42 +283,26 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
 
+        // Lägg till en TextWatcher för att begränsa tecknen
         editTextTextPersonComment.addTextChangedListener(object : TextWatcher {
-            private var toast: Toast? = null
-
-            override fun afterTextChanged(s: Editable?) {
-                // Check if the number of lines exceeds 20
-                val lineCount = editTextTextPersonComment.lineCount
-                if (lineCount > 20) {
-                    // Show a single toast message
-                    if (toast == null || toast?.view?.isShown != true) {
-                        toast?.cancel() // Cancel any previous toast
-                        toast = Toast.makeText(applicationContext, "<You have reached the maximum number of characters>", Toast.LENGTH_SHORT)
-                        toast?.show()
-                    }
-
-                    // Trim the text to fit within 20 lines
-                    val maxLines = 20
-                    val layout = editTextTextPersonComment.layout
-                    val trimIndex = layout.getLineEnd(maxLines - 1)
-                    val trimmedText = s?.toString()?.substring(0, trimIndex)
-
-                    // Update text without triggering afterTextChanged again
-                    editTextTextPersonComment.removeTextChangedListener(this)
-                    editTextTextPersonComment.setText(trimmedText)
-                    editTextTextPersonComment.setSelection(trimmedText?.length ?: 0)
-                    editTextTextPersonComment.addTextChangedListener(this)
-                }
-            }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // No action needed
+                // Ingen åtgärd behövs här
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // No action needed
+                // Ingen åtgärd behövs här
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.length > 300) {
+                    // Trimma texten om den överstiger 300 tecken
+                    editTextTextPersonComment.setText(s.substring(0, 300))
+                    editTextTextPersonComment.setSelection(300) // Sätt markören till slutet av texten
+                    Toast.makeText(this@WorkerProfile, "You have reached the maximum number of characters", Toast.LENGTH_SHORT).show()
+                }
             }
         })
+
 
 
         // Set a TextWatcher to limit input to a maximum of 24 hours and disallow zero
@@ -336,8 +322,8 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                     if (hours == 0) {
                         workHoursEditText.setText("")
 
-                    } else if (hours > 24) {
-                        Toast.makeText(this@WorkerProfile, "Please enter a value between 1 and 24", Toast.LENGTH_SHORT).show()
+                    } else if (hours > 12) {
+                        Toast.makeText(this@WorkerProfile, "Please enter a value between 1 and 12", Toast.LENGTH_SHORT).show()
                         workHoursEditText.setText("0")
                         workHoursEditText.setSelection(workHoursEditText.text.length)
                     }
@@ -372,14 +358,14 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
                                 saveItem()
                             }
                         } else {
-                            Toast.makeText(this, "Comment cannot exceed 350 characters", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "You have reached the maximum number of characters", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(this, "You can only add or edit today's work hour", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "You can only add or modify today's date!", Toast.LENGTH_SHORT).show()
                     }
 
                 } else {
-                    Toast.makeText(this, "Your account is disabled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "You have been blocked in this company", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
@@ -465,7 +451,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
 
     override fun onBackPressed() {
-        Toast.makeText(this, "Use the logout button!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Please use the Logout button to sign out.", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -498,7 +484,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
     override fun onDeleteClick(manifesto: objectData) {
 
-        Toast.makeText(this, "Only the company owner can delete", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Only owner can use this option", Toast.LENGTH_SHORT).show()
 
 
     }
@@ -507,7 +493,7 @@ class WorkerProfile : AppCompatActivity(), workDayAdapter.OnDeleteClickListener,
 
     override fun onEditClick(manifesto: objectData) {
 
-        Toast.makeText(this, "Only the company owner can edit", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Only owner can use this option", Toast.LENGTH_SHORT).show()
 
 
     }
