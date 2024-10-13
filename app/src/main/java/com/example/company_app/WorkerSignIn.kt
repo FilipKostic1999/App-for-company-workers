@@ -10,6 +10,7 @@ import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
@@ -25,6 +26,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -77,7 +79,9 @@ class WorkerSignIn : AppCompatActivity() {
 
     private lateinit var workerSignUpPasEditTexst: EditText
     private lateinit var eyeImg: ImageView
+    private lateinit var termsTxt: TextView
     private var isPasswordVisible: Boolean = false
+    private lateinit var sharedPreferences: SharedPreferences
 
     private val shakeRunnable = object : Runnable {
         override fun run() {
@@ -96,6 +100,9 @@ class WorkerSignIn : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
 
 
         var auth = FirebaseAuth.getInstance()
@@ -143,7 +150,13 @@ class WorkerSignIn : AppCompatActivity() {
             scheduleNotificationAtFivePM()// Schedule your notification if permission already granted
         }
 
+        termsTxt = findViewById(R.id.termsTxt)
 
+        termsTxt.setOnClickListener {
+            // Start Privacy Policy Activity
+            val intent = Intent(this, PrivacyPolicy::class.java)
+            startActivity(intent)
+        }
 
         eyeImg = findViewById(R.id.eyeImg)
 
@@ -176,6 +189,11 @@ class WorkerSignIn : AppCompatActivity() {
                         if (authTask.isSuccessful) {
                             val user = firebaseAuth.currentUser
                             if (user != null) {
+
+                                with(sharedPreferences.edit()) {
+                                    putString("userEmail", email)
+                                    apply()
+                                }
                                 database.collection("Users").document(user.uid)
                                     .get()
                                     .addOnSuccessListener { document ->
@@ -192,6 +210,8 @@ class WorkerSignIn : AppCompatActivity() {
                                             intent.putExtra("isWorkerBlocked", isBlocked)
                                             intent.putExtra("workerName", workerName)
                                             intent.putExtra("workerEmail", workerEmail)
+
+
                                             progressDialog.dismiss()
                                             startActivity(intent)
                                         } else {
@@ -396,6 +416,8 @@ class WorkerSignIn : AppCompatActivity() {
             pendingIntent
         )
     }
+
+
 }
 
 
